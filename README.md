@@ -4,13 +4,13 @@ A full-stack web application that leverages Google's **Gemini AI API** to genera
 
 ## 📸 Application Showcase
 
-**1. Dynamic Input Dashboard**
+**1. Home Screen**
 <img width="1440" height="900" alt="Home Screen" src="https://github.com/user-attachments/assets/fa740d38-5dc9-4a6f-aef7-136678541263" />
 
-**2. AI-Generated Structured Itinerary**
+**2. Login Screen**
 <img width="1440" height="900" alt="Login Screen" src="https://github.com/user-attachments/assets/15f36702-8855-4d08-9aaf-f3daf3a07d74" />
 
-**3. Spatial Context & Error Handling**
+**3. Dynamic Input Dashboard**
 <img width="1440" height="900" alt="Prompt Screen" src="https://github.com/user-attachments/assets/075cdc6e-c3d7-43c6-87b3-e339c779d562" />
 
 ## 🚀 Features
