@@ -1,5 +1,11 @@
 # 🌍 Ai-tinerary: Dynamic AI Travel Orchestrator
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/14c11616-4783-4492-a35f-5b4f8b8ffb05" width="32%" alt="Screen1" />
+  <img src="https://github.com/user-attachments/assets/e85ea306-7eae-414c-979e-cf357304ebb9" width="32%" alt="Screen2" />
+  <img src="https://github.com/user-attachments/assets/988e83b0-2517-4ac5-96b0-1037738d49a9" width="32%" alt="Screen3" />
+</p>
+
 A full-stack web application that leverages Google's **Gemini AI API** to generate personalized, structured travel itineraries. Designed with a focus on robust API communication, prompt engineering, and dynamic UI rendering.
 
 ## 🚀 Features
@@ -52,9 +58,10 @@ Ensure the Spring Boot server is running on localhost:8080 to allow the JavaScri
 Built by Abdul Kalam U
 
 
-### How to push just this file:
-Since you already pushed the main code, just run these three commands in your terminal after saving the `README.md` file:
+### How to update this on GitHub:
+Since you just need to update this one file, go to your terminal and run these exact three commands again to push the fix:
+
 ```bash
 git add README.md
-git commit -m "docs: Added professional README with setup instructions and architecture details"
+git commit -m "docs: Fixed image gallery formatting and cleaned up markdown"
 git push origin main
