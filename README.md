@@ -1,12 +1,17 @@
 # 🌍 Ai-tinerary: Dynamic AI Travel Orchestrator
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/ee64a0d6-7628-4a04-9a7d-df5250cab95c" width="32" alt="Screen1 />
-  <img src="https://github.com/user-attachments/assets/14c11616-4783-4492-a35f-5b4f8b8ffb05" width="32%" alt="Screen2" />
-  <img src="https://github.com/user-attachments/assets/988e83b0-2517-4ac5-96b0-1037738d49a9" width="32%" alt="Screen3" />
-</p>
-
 A full-stack web application that leverages Google's **Gemini AI API** to generate personalized, structured travel itineraries. Designed with a focus on robust API communication, prompt engineering, and dynamic UI rendering.
+
+## 📸 Application Showcase
+
+**1. Dynamic Input Dashboard**
+<img width="1440" height="900" alt="Home Screen" src="https://github.com/user-attachments/assets/fa740d38-5dc9-4a6f-aef7-136678541263" />
+
+**2. AI-Generated Structured Itinerary**
+<img width="1440" height="900" alt="Login Screen" src="https://github.com/user-attachments/assets/15f36702-8855-4d08-9aaf-f3daf3a07d74" />
+
+**3. Spatial Context & Error Handling**
+<img width="1440" height="900" alt="Prompt Screen" src="https://github.com/user-attachments/assets/075cdc6e-c3d7-43c6-87b3-e339c779d562" />
 
 ## 🚀 Features
 * **AI-Powered Itineraries:** Generates comprehensive day-by-day travel plans using the Gemini AI model based on user constraints.
@@ -58,10 +63,9 @@ Ensure the Spring Boot server is running on localhost:8080 to allow the JavaScri
 Built by Abdul Kalam U
 
 
-### How to update this on GitHub:
-Since you just need to update this one file, go to your terminal and run these exact three commands again to push the fix:
-
+### Push the Update
+Run your usual three commands in the terminal to ship this change:
 ```bash
 git add README.md
-git commit -m "docs: Fixed image gallery formatting and cleaned up markdown"
+git commit -m "docs: Updated README to display full-width application showcase images"
 git push origin main
