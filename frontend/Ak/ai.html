@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Travel Plan</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1117;
+      color: #f0f6fc;
+      display: flex;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #161b22;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+      position: fixed;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 10px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .sidebar ul li {
+      margin: 10px 0;
+      cursor: pointer;
+      padding: 20px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background-color: #21262d;
+      box-shadow: #58a6ff 0px 0px 0px 2px inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+    .sidebar ul li:hover {
+      color: #58a6ff;
+    }
+    .content {
+      margin-left: 270px;
+      padding: 20px;
+      width: calc(100% - 270px);
+    }
+    .section {
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #30363d;
+    }
+    .section h3 {
+      margin-top: 0;
+      color: #58a6ff;
+    }
+    .weather-grid, .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Your Plan</h2>
+    <ul>
+      <li onclick="scrollToSection('about')">About the Place</li>
+      <li onclick="scrollToSection('weather')">Weather</li>
+      <li onclick="scrollToSection('activities')">Top Activities</li>
+      <li onclick="scrollToSection('places')">Top Places to Visit</li>
+      <li onclick="scrollToSection('itinerary')">Itinerary</li>
+      </ul>
+  </div>
+
+  <div class="content">
+    <div id="about" class="section">
+      <h3>About the Place</h3>
+      <p id="about-box">Loading...</p>
+    </div>
+
+    <div id="weather" class="section">
+      <h3>Weather</h3>
+      <div class="weather-grid" id="weather-box">Loading...</div>
+    </div>
+
+    <div id="activities" class="section">
+      <h3>Top Activities</h3>
+      <div id="activities-box">Loading...</div>
+    </div>
+
+    <div id="places" class="section">
+      <h3>Top Places to Visit</h3>
+      <div id="places-box">Loading...</div>
+      <iframe id="map-iframe" src="about:blank"></iframe>
+    </div>
+
+    <div id="itinerary" class="section">
+      <h3>Itinerary</h3>
+      <div id="itinerary-box">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => {
+        section.style.padding = '20px';
+        section.style.marginBottom = '20px';
+        section.style.backgroundColor = '#1e1e2f';
+        section.style.borderRadius = '12px';
+        section.style.display = 'grid';
+        section.style.gridTemplateColumns = '1fr';
+        section.style.gap = '10px';
+      });
+    });
+  </script>
+
+  <script src="plan.js"></script>
+</body>
+</html>
