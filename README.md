@@ -1,8 +1,8 @@
 # 🌍 Ai-tinerary: Dynamic AI Travel Orchestrator
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/14c11616-4783-4492-a35f-5b4f8b8ffb05" width="32%" alt="Screen1" />
-  <img src="https://github.com/user-attachments/assets/e85ea306-7eae-414c-979e-cf357304ebb9" width="32%" alt="Screen2" />
+  <img src="https://github.com/user-attachments/assets/ee64a0d6-7628-4a04-9a7d-df5250cab95c" width="32" alt="Screen1 />
+  <img src="https://github.com/user-attachments/assets/14c11616-4783-4492-a35f-5b4f8b8ffb05" width="32%" alt="Screen2" />
   <img src="https://github.com/user-attachments/assets/988e83b0-2517-4ac5-96b0-1037738d49a9" width="32%" alt="Screen3" />
 </p>
 
