@@ -16,7 +16,7 @@ A full-stack web application that leverages Google's **Gemini AI API** to genera
 ## 🚀 Features
 * **AI-Powered Itineraries:** Generates comprehensive day-by-day travel plans using the Gemini AI model based on user constraints.
 * **Structured Data Parsing:** Utilizes strict prompt engineering to force the LLM to return standardized JSON payloads instead of unstructured text.
-* **Dynamic Dashboard:** A custom asynchronous JavaScript engine deserializes the API response and dynamically injects the data into a responsive Tailwind CSS frontend.
+* **Dynamic Dashboard:** A custom asynchronous JavaScript engine deserializes the API response and dynamically injects the data into a responsive Tailwind CSS frontend..
 * **Spatial Context:** Integrates the Google Maps Embed API to provide real-time location views based on extracted destination entities.
 * **Defensive Error Handling:** Implements graceful UI degradation to handle API rate-limiting (HTTP 429 Quota Exhaustion) and high-latency generation without crashing the application.
 
