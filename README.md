@@ -1,75 +1,121 @@
-# 🌍 AI-Tinerary: AI-Powered Travel Planner
+<div align="center">
+  <h1>🌍 AI-Tinerary</h1>
+  <p><strong>The Future of AI-Powered Travel Planning</strong></p>
 
-[![Java](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18-blue.svg)](https://react.dev/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+  [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg?style=for-the-badge&logo=java)](https://openjdk.org/)
+  [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg?style=for-the-badge&logo=springboot)](https://spring.io/projects/spring-boot)
+  [![React](https://img.shields.io/badge/React-18-blue.svg?style=for-the-badge&logo=react)](https://react.dev/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
+</div>
 
-AI-Tinerary is a full-stack web application that generates personalized, interactive travel itineraries using AI. It leverages an advanced RAG (Retrieval-Augmented Generation) pipeline and seamlessly falls back across multiple AI providers (Groq, OpenAI, Gemini) to guarantee reliable service.
+<br/>
 
-## ✨ Features
-- **Intelligent LLM Router**: Automatically falls back between Groq, OpenAI, and Gemini.
-- **RAG Knowledge Base**: Uses `hibernate-vector` to provide the AI with grounded contextual knowledge.
-- **Interactive UI**: Drag-and-drop itinerary editing, 3D interactive globes, and Leaflet mapping.
-- **Secure Backend**: Stateless JWT authentication and role-based access control.
+AI-Tinerary isn't just another travel app—it's a **context-aware, highly-resilient travel architect**. By leveraging multiple Large Language Models and a custom Retrieval-Augmented Generation (RAG) pipeline, it instantly synthesizes complex travel variables into beautiful, interactive, and personalized itineraries.
 
-## 🛠️ Tech Stack
-- **Backend:** Java 17+, Spring Boot 3.5, Spring Security (JWT), Spring Data JPA, PostgreSQL / H2.
-- **Frontend:** React 18, Vite, Tailwind CSS, Framer Motion, React-Leaflet, React-Globe.gl.
-- **AI Integrations:** Native HTTP Client integration with Groq, OpenAI, and Gemini APIs.
+---
 
-## 🚀 Quick Start (Local Development)
+## 🏗️ Project Architecture Pipeline
 
-### Prerequisites
-- Java 17 or higher
-- Node.js & npm
-- An API key from [Groq](https://console.groq.com/), [OpenAI](https://platform.openai.com/), or [Google AI Studio](https://aistudio.google.com/)
+GitHub natively renders this architecture diagram! It showcases how our modern stack handles data flow from the user all the way to our dynamic AI fallback router.
 
-### 1. Backend Setup
+```mermaid
+graph TD
+    %% Define Styles
+    classDef client fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef server fill:#6db33f,stroke:#333,stroke-width:2px,color:#fff
+    classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
+    classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+
+    User((👤 Traveler)) -->|Interacts| UI
+    
+    subgraph Frontend [🌐 React / Vite Frontend]
+        UI[Interactive UI & Forms]:::client
+        Maps[Leaflet Maps & 3D Globe]:::client
+        UI <--> Maps
+    end
+    
+    UI -->|REST API / JWT| API
+    
+    subgraph Backend [☕ Spring Boot 3 Backend]
+        API[Spring Web Controllers]:::server
+        Security[Spring Security & JWT]:::server
+        Router[🧠 AI Model Router]:::server
+        RAG[Hibernate Vector RAG]:::server
+    end
+    
+    API --> Security
+    Security --> Router
+    Security --> RAG
+    
+    subgraph AI [🤖 Pluggable AI Providers]
+        Groq[Groq LLaMA 3.3]:::ai
+        OpenAI[OpenAI GPT-4o]:::ai
+        Gemini[Google Gemini 2.5]:::ai
+    end
+    
+    Router -.->|1. Primary| Groq
+    Router -.->|2. Fallback| OpenAI
+    Router -.->|3. Fallback| Gemini
+    
+    subgraph Database [🗄️ Persistence Layer]
+        SQL[(PostgreSQL Core Data)]:::db
+        Vector[(Vector Embeddings)]:::db
+    end
+    
+    Security --> SQL
+    RAG --> Vector
+```
+
+---
+
+## 🚀 Step-by-Step Quick Start
+
+Want to run this beast locally? Follow these simple steps.
+
+### Step 1: Clone & Configure
+First, get the code on your local machine and set up your environment variables.
 ```bash
-# Clone the repository
 git clone https://github.com/AbdulKalamU/Ai-tinerary.git
 cd Ai-tinerary
-
-# Configure environment variables
 cp .env.example .env.local
-# Open .env.local and add your API keys and a JWT secret
+```
+> 🔑 **Important:** Open `.env.local` and add at least one AI API key (Groq, OpenAI, or Gemini) and a secure JWT Secret string.
 
-# Run the Spring Boot application
+### Step 2: Ignite the Backend
+Our Java Spring Boot server handles all the heavy lifting, security, and AI routing.
+```bash
+# Run the Maven wrapper to start the Spring Boot app
 ./mvnw spring-boot:run
 ```
-*The backend runs on `http://localhost:8080` and uses an in-memory H2 database by default.*
+*The backend will boot up on `http://localhost:8080`. It uses an in-memory H2 database by default, so no local SQL installation is required!*
 
-### 2. Frontend Setup
+### Step 3: Launch the Frontend
+In a **new terminal window**, spin up the React interface.
 ```bash
-# Open a new terminal tab
 cd frontend-react
-
-# Install dependencies
 npm install
-
-# Start the Vite development server
 npm run dev
 ```
-*The frontend runs on `http://localhost:5173`.*
+*The Vite dev server will start at `http://localhost:5173`. Open this in your browser to see the magic.*
 
-## 🤝 Contributing
+---
 
-We welcome contributions from the open-source community! Whether it's a bug fix, new feature, or documentation improvement, your help is appreciated.
+## 🤝 How to Contribute
 
-### How to Contribute
-1. **Fork** the repository.
-2. **Clone** your fork locally.
-3. **Create a branch** for your feature (`git checkout -b feature/AmazingFeature`).
-4. **Make your changes** and test them locally.
-5. **Commit** your changes (`git commit -m 'Add some AmazingFeature'`).
-6. **Push** to your branch (`git push origin feature/AmazingFeature`).
-7. **Open a Pull Request** against the `main` branch of this repository.
+This is an open-source project and we would absolutely love your help! Whether you want to improve the AI prompts, add new 3D globe features, or fix a CSS bug, here is how you do it:
 
-### Development Guidelines
-- Ensure your Java code follows standard Spring Boot conventions.
-- Run tests (`./mvnw test`) before submitting a PR.
-- Ensure your React components use Tailwind CSS for styling and follow the existing design system.
+1. **Fork** this repository to your own GitHub account.
+2. **Clone** your fork to your computer.
+3. **Create a branch** for your feature: `git checkout -b feature/MyAwesomeFeature`
+4. **Code your heart out!**
+5. **Commit your changes**: `git commit -m 'Added an awesome feature'`
+6. **Push to your fork**: `git push origin feature/MyAwesomeFeature`
+7. **Open a Pull Request** back to our `main` branch.
+
+### 🌟 What we need help with right now:
+* Replacing H2 database with full PostgreSQL support in Docker.
+* Adding a "Download to PDF" feature for generated itineraries.
+* Improving the mobile-responsiveness of the 3D globe.
 
 ## 📄 License
-This project is licensed under the MIT License.
+This project is open-source and licensed under the **MIT License**. Feel free to use it, break it, and build upon it!
