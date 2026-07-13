@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Travel Plan</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #0d1117;
+      color: #f0f6fc;
+      display: flex;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #161b22;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+      position: fixed;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #30363d;
+      padding-bottom: 10px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      
+    }
+    .sidebar ul li {
+      margin: 10px 0;
+      cursor: pointer;
+      padding: 20px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+      color: #c9d1d9;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background-color: #21262d;
+      box-shadow: #58a6ff 0px 0px 0px 2px inset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+    .sidebar ul li:hover {
+      color: #58a6ff;
+    }
+    .content {
+      margin-left: 270px;
+      padding: 20px;
+      width: calc(100% - 270px);
+    }
+    .section {
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #30363d;
+    }
+    .section h3 {
+      margin-top: 0;
+      color: #58a6ff;
+    }
+    .weather-grid, .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .weather-item, .checklist-item {
+      background-color: #0d1117;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #30363d;
+    }
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 8px;
+    }
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Your Plan</h2>
+    <ul>
+      <li onclick="scrollToSection('about')">About the Place</li>
+      <li onclick="scrollToSection('weather')">Weather</li>
+      <li onclick="scrollToSection('activities')">Top Activities</li>
+      <li onclick="scrollToSection('places')">Top Places to Visit</li>
+      <li onclick="scrollToSection('itinerary')">Itinerary</li>
+      <li onclick="scrollToSection('cuisines')">Local Cuisines</li>
+      <li onclick="scrollToSection('checklist')">Packing Checklist</li>
+      <li onclick="scrollToSection('besttime')">Best Time to Visit</li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <div id="about" class="section">
+      <h3>About the Place</h3>
+      <p id="aboutContent">Loading...</p>
+    </div>
+
+    <div id="weather" class="section">
+      <h3>Weather</h3>
+      <div class="weather-grid" id="weatherContent">Loading...</div>
+    </div>
+
+    <div id="activities" class="section">
+      <h3>Top Activities</h3>
+      <ul id="activitiesContent">Loading...</ul>
+    </div>
+
+    <div id="places" class="section">
+      <h3>Top Places to Visit</h3>
+      <ul id="placesContent">Loading...</ul>
+      <iframe src="https://maps.google.com/maps?q=chennai&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+    </div>
+
+    <div id="itinerary" class="section">
+      <h3>Itinerary</h3>
+      <div id="itineraryContent">Loading...</div>
+    </div>
+
+    <div id="cuisines" class="section">
+      <h3>Local Cuisines</h3>
+      <ol id="cuisineContent">Loading...</ol>
+    </div>
+
+    <div id="checklist" class="section">
+      <h3>Packing Checklist</h3>
+      <div class="checklist-grid" id="checklistContent">Loading...</div>
+    </div>
+
+    <div id="besttime" class="section">
+      <h3>Best Time to Visit</h3>
+      <p id="besttimeContent">Loading...</p>
+    </div>
+  </div>
+  <div id="ai-plan-content" class="ai-content-container">
+    <!-- AI-generated content will be inserted here -->
+  </div>
+  
+
+  <script>
+    // Function to scroll to a specific section
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        console.error(`Section with ID '${sectionId}' not found.`);
+      }
+    }
+
+    document.querySelectorAll('.option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('selected');
+      });
+    });
+
+    const cities = [
+      "Amsterdam", "Athens", "Auckland", "Bangkok", "Barcelona",
+      "Berlin", "Boston", "Cairo", "Chennai", "Delhi", "Dubai",
+      "Istanbul", "London", "Melbourne", "New York", "Paris",
+      "Rome", "Singapore", "Sydney", "Tokyo"
+    ];
+
+    function autocompleteCity(query) {
+      const suggestionsDiv = document.getElementById('suggestions');
+      suggestionsDiv.innerHTML = "";
+
+      if (query.length === 0) return;
+
+      const filtered = cities.filter(city =>
+        city.toLowerCase().startsWith(query.toLowerCase())
+      );
+
+      filtered.forEach(city => {
+        const div = document.createElement("div");
+        div.innerText = city;
+        div.style.padding = "10px 14px";
+        div.style.cursor = "pointer";
+        div.style.backgroundColor = "#2c3e50";
+        div.style.marginTop = "4px";
+        div.style.borderRadius = "6px";
+        div.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+        div.onclick = () => {
+          document.getElementById("destination").value = city;
+          suggestionsDiv.innerHTML = "";
+        };
+        div.onmouseover = () => div.style.backgroundColor = "#4c8df1";
+        div.onmouseout = () => div.style.backgroundColor = "#2c3e50";
+        suggestionsDiv.appendChild(div);
+      });
+    }
+
+    function openModal() {
+      const modal = document.getElementById('travelModal');
+      modal.style.display = 'flex';
+      modal.style.animation = 'fadeIn 0.4s ease';
+      modal.style.backdropFilter = 'blur(10px)';
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('travelModal');
+      modal.style.animation = 'fadeOut 0.3s ease';
+      setTimeout(() => modal.style.display = 'none', 300);
+    }
+
+    // Add padding and grid layout enhancements
+    window.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(section => {
+        section.style.padding = '20px';
+        section.style.marginBottom = '20px';
+        section.style.backgroundColor = '#1e1e2f';
+        section.style.borderRadius = '12px';
+        section.style.display = 'grid';
+        section.style.gridTemplateColumns = '1fr';
+        section.style.gap = '10px';
+      });
+    });
+    window.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const destination = params.get("destination");
+      const startDate = params.get("startDate");
+      const endDate = params.get("endDate");
+      const groupType = params.get("groupType");
+      const activities = JSON.parse(params.get("activities") || "[]");
+
+      const payload = {
+        destination,
+        startDate,
+        endDate,
+        groupType,
+        activities
+      };
+
+      try {
+        const response = await fetch('http://localhost:8080/api/ai/generate-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Unable to load plan.";
+
+        // Example logic to insert content (you can split further by section)
+        document.getElementById("aboutContent").textContent = text;
+        document.getElementById("weatherContent").textContent = text;
+        document.getElementById("activitiesContent").textContent = text;
+      } catch (error) {
+          console.error("Error fetching AI-generated plan:", error);
+        }
+      });
+
+    const express = require('express');
+    const path = require('path');
+    const app = express();
+
+    // Serve static files from the 'frontend' directory
+    app.use(express.static(path.join(__dirname, '../frontend')));
+
+    // Route to serve ai.html
+    app.get('/ai.html', (req, res) => {
+      res.sendFile(path.join(__dirname, '../frontend/Ak/ai.html'));
+    });
+
+    // Start the server
+    const PORT = 8080;
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  </script>
+</body>
+</html>

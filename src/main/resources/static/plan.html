@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Community Plans</title>
+  <link rel="stylesheet" href="plan.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png" alt="logo">
+      Travel Planner <span>AI</span>
+    </div>
+    <nav>
+      <a href="#" class="active">Community Plans</a>
+    </nav>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" placeholder="🔍 Search Travel Plan...">
+    <button class="create-btn" onclick="openModal()">🔒 Create Travel Plan</button>
+  </div>
+
+  <div class="empty-state">
+    <img src="https://cdn-icons-png.flaticon.com/512/929/929426.png" alt="No plans icon">
+    <p>No Plans Created Yet!</p>
+  </div>
+
+  <div class="modal" id="travelModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>📍 Search for your destination city</h2>
+      <input type="text" id="destination" placeholder="Enter city" onkeyup="autocompleteCity(this.value)">
+      <div id="suggestions" class="suggestions"></div>
+
+      <h3>📅 Select Dates</h3>
+      <input id="startDate" type="date"/>
+      <input id="endDate" type="date"/>
+
+      <h3>🎯 Select Activities</h3>
+      <div class="button-group">
+        <button class="option-btn">🏙️ Sightseeing</button>
+        <button class="option-btn">🧗 Adventure</button>
+        <button class="option-btn">🎭 Cultural</button>
+        <button class="option-btn">🏛️ Historical</button>
+        <button class="option-btn">🧘 Relaxation</button>
+        <button class="option-btn">🛍️ Shopping</button>
+        <button class="option-btn">🌃 Nightlife</button>
+      </div>
+
+      <h3>👥 Who are you traveling with? (Optional)</h3>
+      <div class="button-group">
+        <button class="option-btn">🧍 Solo</button>
+        <button class="option-btn">💑 Couple</button>
+        <button class="option-btn">👨‍👩‍👧 Family</button>
+        <button class="option-btn">👯 Group</button>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button class="create-btn">✨ Create Your Plan</button>
+        <button class="generate-ai-btn">Generate AI Plan</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="plan.js"></script>
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Travel Planner - Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-image: url('assets/login.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .container {
+      background-color: rgba(25, 27, 98, 0.108);
+      backdrop-filter: blur(8px);
+      padding: 40px 30px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .highlight {
+      color: #60a5fa;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .social-button img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .social-button.github {
+      background-color: #111827;
+      color: #fff;
+    }
+
+    .social-button:hover {
+      background-color: #e5e7eb;
+    }
+
+    .social-button.github:hover {
+      background-color: #1f2937;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #9ca3af;
+      margin: 20px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background-color: #6b7280;
+      margin: 0 8px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    label {
+      font-size: 14px;
+      color: #d1d5db;
+    }
+
+    input[type="email"] {
+      padding: 10px 30px;
+      border-radius: 10px;
+      border: 1px solid #4b5563;
+      background-color: #111827;
+      color: #fff;
+      outline: none;
+    }
+
+    input[type="email"]::placeholder {
+      color: #9ca3af;
+    }
+
+    button[type="submit"] {
+      background-color: #2563eb;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #1e40af;
+    }
+
+    .footer-text {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    .footer-text a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
+
+    .footer-text a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+        margin: 0 16px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Sign in to <span class="highlight">AI Travel Planner</span></h2>
+
+    <div class="social-buttons">
+      <button class="social-button">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" />
+        Continue with Google
+      </button>
+      <button class="social-button github">
+        <img src="https://www.svgrepo.com/show/512317/github-142.svg" alt="GitHub" />
+        Continue with GitHub
+      </button>
+    </div>
+
+    <div class="divider">or</div>
+
+    <form>
+      <div>
+        <label for="email">Email address</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required />
+      </div>
+      <button type="submit">Continue</button>
+    </form>
+
+    <p class="footer-text">
+      No account? <a href="#">Sign up</a>
+    </p>
+  </div>
+</body>
+</html>

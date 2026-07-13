@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: aitinerary-postgres
+    environment:
+      POSTGRES_DB: aitinerary
+      POSTGRES_USER: aitinerary_user
+      POSTGRES_PASSWORD: aitinerary_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - aitinerary-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aitinerary_user -d aitinerary"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aitinerary-app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: aitinerary
+      DB_USERNAME: aitinerary_user
+      DB_PASSWORD: aitinerary_pass
+      
+      # JWT (generate a secure secret for production!)
+      JWT_SECRET: dGhpc19pc19hX3Zlcnlfc2VjdXJlX2p3dF9zZWNyZXRfa2V5X2Zvcl9kZXZlbG9wbWVudF9vbmx5X2NoYW5nZV9pbl9wcm9kdWN0aW9u
+      JWT_EXPIRATION: 86400000
+      
+      # AI Provider Configuration
+      AI_PROVIDER: ${AI_PROVIDER:-groq}
+      GROQ_API_KEY: ${GROQ_API_KEY:-not_configured}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-not_configured}
+      
+      # CORS — allow React frontend in dev and production
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000}
+      
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    networks:
+      - aitinerary-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    container_name: aitinerary-frontend
+    ports:
+      - "5173:80"
+    networks:
+      - aitinerary-network
+    depends_on:
+      - app
+    restart: unless-stopped
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  aitinerary-network:
+    driver: bridge
