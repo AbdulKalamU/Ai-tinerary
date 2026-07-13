@@ -35,12 +35,12 @@ graph TD
     classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
     classDef external fill:#95a5a6,stroke:#333,stroke-width:2px,color:#fff
 
-    User((👤 Traveler)) :::user
+    User(("👤 Traveler")):::user
 
     subgraph Presentation Layer [🌐 Frontend - React / Vite]
-        UI[Interactive UI & Dashboards]:::frontend
-        MapEngine[Spatial Engine: Leaflet / Globe.gl]:::frontend
-        State[State Management & Validation]:::frontend
+        UI["Interactive UI & Dashboards"]:::frontend
+        MapEngine["Spatial Engine: Leaflet / Globe.gl"]:::frontend
+        State["State Management & Validation"]:::frontend
     end
 
     User -->|Requests Itinerary| UI
@@ -48,19 +48,19 @@ graph TD
     State <--> MapEngine
 
     subgraph API Gateway [🛡️ Security & Routing]
-        Auth[JWT Authentication]:::api
-        RateLimit[Rate Limiting & CORS]:::api
+        Auth["JWT Authentication"]:::api
+        RateLimit["Rate Limiting & CORS"]:::api
     end
 
     UI -->|JSON/REST via Axios| Auth
     Auth --> RateLimit
 
     subgraph Business Logic Layer [☕ Spring Boot Backend]
-        Controller[REST Controllers]:::backend
-        Service[Itinerary Generation Service]:::backend
-        Orchestrator[🧠 AI Orchestrator / Prompt Manager]:::backend
-        RAG[Hibernate Vector RAG Service]:::backend
-        Parser[JSON Structured Response Parser]:::backend
+        Controller["REST Controllers"]:::backend
+        Service["Itinerary Generation Service"]:::backend
+        Orchestrator["🧠 AI Orchestrator / Prompt Manager"]:::backend
+        RAG["Hibernate Vector RAG Service"]:::backend
+        Parser["JSON Structured Response Parser"]:::backend
     end
 
     RateLimit --> Controller
@@ -71,15 +71,15 @@ graph TD
     Parser --> Controller
 
     subgraph External APIs [🌍 Third-Party Services]
-        OSM[OpenStreetMap API]:::external
+        OSM["OpenStreetMap API"]:::external
     end
     
     MapEngine -.->|Geocoding / Coordinates| OSM
 
     subgraph AI Strategy [🤖 Pluggable LLM Router]
-        Groq[Groq LLaMA 3.3]:::ai
-        OpenAI[OpenAI GPT-4o]:::ai
-        Gemini[Google Gemini 2.5]:::ai
+        Groq["Groq LLaMA 3.3"]:::ai
+        OpenAI["OpenAI GPT-4o"]:::ai
+        Gemini["Google Gemini 2.5"]:::ai
     end
     
     Orchestrator -.->|1. Fast Inference| Groq
@@ -87,8 +87,8 @@ graph TD
     Orchestrator -.->|3. Multi-Modal| Gemini
 
     subgraph Persistence Layer [🗄️ Database Ecosystem]
-        SQL[(PostgreSQL / Relational Data)]:::db
-        Vector[(Vector Embeddings)]:::db
+        SQL[("PostgreSQL / Relational Data")]:::db
+        Vector[("Vector Embeddings")]:::db
     end
     
     Service --> SQL
