@@ -10,17 +10,23 @@
 
 <br/>
 
-AI-Tinerary isn't just another travel app—it's a **context-aware, highly-resilient travel architect**. By leveraging multiple Large Language Models and a custom Retrieval-Augmented Generation (RAG) pipeline, it instantly synthesizes complex travel variables into beautiful, interactive, and personalized itineraries.
+## 🤖 What is it doing?
+
+AI-Tinerary is a full-stack web application that takes the stress out of travel planning by using Large Language Models to generate highly detailed, personalized travel itineraries in seconds. 
+
+Here is exactly what happens when you hit "Generate Trip":
+1. **User Input:** You enter your destination, dates, and preferences in the React frontend.
+2. **AI Routing:** The Spring Boot backend receives the request and dynamically routes it to the most capable, available AI Provider (Groq LLaMA 3.3, OpenAI GPT-4o, or Google Gemini).
+3. **RAG Context:** Before asking the AI, the backend uses `hibernate-vector` to fetch specific local knowledge (like hidden gems or cultural norms) from our vector database and injects it into the prompt.
+4. **Data Synthesis:** The AI generates a structured JSON response detailing day-by-day activities, estimated costs, and real-world map coordinates.
+5. **Interactive Visualization:** The frontend parses this data and renders it onto a 3D interactive globe and 2D Leaflet maps, allowing you to visually explore your trip!
 
 ---
 
 ## 🏗️ Project Architecture Pipeline
 
-GitHub natively renders this architecture diagram! It showcases how our modern stack handles data flow from the user all the way to our dynamic AI fallback router.
-
 ```mermaid
 graph TD
-    %% Define Styles
     classDef client fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
     classDef server fill:#6db33f,stroke:#333,stroke-width:2px,color:#fff
     classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
@@ -58,7 +64,7 @@ graph TD
     Router -.->|3. Fallback| Gemini
     
     subgraph Database [🗄️ Persistence Layer]
-        SQL[(PostgreSQL Core Data)]:::db
+        SQL[(Core SQL Database)]:::db
         Vector[(Vector Embeddings)]:::db
     end
     
@@ -68,54 +74,61 @@ graph TD
 
 ---
 
-## 🚀 Step-by-Step Quick Start
+## 🚀 Step-by-Step Local Setup
 
-Want to run this beast locally? Follow these simple steps.
+Want to run this locally on your own machine? Follow these exact steps:
 
-### Step 1: Clone & Configure
-First, get the code on your local machine and set up your environment variables.
+### Prerequisites
+Before you start, make sure you have installed:
+*   **Java 17** or higher
+*   **Node.js** (v18+) and **npm**
+*   Get a free API key from [Groq](https://console.groq.com/) or [Google Gemini](https://aistudio.google.com/)
+
+### Step 1: Clone the Repository
+Open your terminal and download the code to your machine:
 ```bash
 git clone https://github.com/AbdulKalamU/Ai-tinerary.git
 cd Ai-tinerary
-cp .env.example .env.local
 ```
-> 🔑 **Important:** Open `.env.local` and add at least one AI API key (Groq, OpenAI, or Gemini) and a secure JWT Secret string.
 
-### Step 2: Ignite the Backend
-Our Java Spring Boot server handles all the heavy lifting, security, and AI routing.
+### Step 2: Configure Environment Variables
+The app needs your API keys to talk to the AI.
+1. Create a copy of the example environment file:
+   ```bash
+   cp .env.example .env.local
+   ```
+2. Open `.env.local` in any text editor.
+3. Paste your Groq or Gemini API key into the respective field. 
+4. Add a random long string for the `JWT_SECRET` (this is used to secure user logins).
+
+### Step 3: Start the Spring Boot Backend
+Our Java backend uses Maven. You don't even need to install Maven yourself, it comes with a wrapper (`mvnw`) that handles it for you!
 ```bash
-# Run the Maven wrapper to start the Spring Boot app
+# Run this command in the root Ai-tinerary directory
 ./mvnw spring-boot:run
 ```
-*The backend will boot up on `http://localhost:8080`. It uses an in-memory H2 database by default, so no local SQL installation is required!*
+*Wait until you see `Started AiTineraryApplication` in the console. The backend is now securely running on `http://localhost:8080`! (It automatically uses a local H2 database, so no SQL setup is needed).*
 
-### Step 3: Launch the Frontend
-In a **new terminal window**, spin up the React interface.
+### Step 4: Start the React Frontend
+Open a **new terminal tab** (leave the backend running in the first one) and navigate to the frontend directory:
 ```bash
 cd frontend-react
+
+# Install all the necessary frontend libraries
 npm install
+
+# Start the Vite development server
 npm run dev
 ```
-*The Vite dev server will start at `http://localhost:5173`. Open this in your browser to see the magic.*
+*Vite is incredibly fast. Within seconds, it will tell you the frontend is running at `http://localhost:5173`. Open that link in your browser!*
+
+### Step 5: Test it out!
+1. Open `http://localhost:5173` in your browser.
+2. Create a new account on the login page.
+3. Enter a dream destination like "Tokyo, Japan" for a 5-day trip.
+4. Watch the AI generate your highly detailed travel itinerary!
 
 ---
 
-## 🤝 How to Contribute
-
-This is an open-source project and we would absolutely love your help! Whether you want to improve the AI prompts, add new 3D globe features, or fix a CSS bug, here is how you do it:
-
-1. **Fork** this repository to your own GitHub account.
-2. **Clone** your fork to your computer.
-3. **Create a branch** for your feature: `git checkout -b feature/MyAwesomeFeature`
-4. **Code your heart out!**
-5. **Commit your changes**: `git commit -m 'Added an awesome feature'`
-6. **Push to your fork**: `git push origin feature/MyAwesomeFeature`
-7. **Open a Pull Request** back to our `main` branch.
-
-### 🌟 What we need help with right now:
-* Replacing H2 database with full PostgreSQL support in Docker.
-* Adding a "Download to PDF" feature for generated itineraries.
-* Improving the mobile-responsiveness of the 3D globe.
-
 ## 📄 License
-This project is open-source and licensed under the **MIT License**. Feel free to use it, break it, and build upon it!
+This project is licensed under the **MIT License**.
