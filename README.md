@@ -27,48 +27,71 @@ Here is exactly what happens when you hit "Generate Trip":
 
 ```mermaid
 graph TD
-    classDef client fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
-    classDef server fill:#6db33f,stroke:#333,stroke-width:2px,color:#fff
-    classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
+    classDef user fill:#8a2be2,stroke:#333,stroke-width:2px,color:#fff
+    classDef frontend fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef api fill:#e67e22,stroke:#333,stroke-width:2px,color:#fff
+    classDef backend fill:#6db33f,stroke:#333,stroke-width:2px,color:#fff
     classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
+    classDef external fill:#95a5a6,stroke:#333,stroke-width:2px,color:#fff
 
-    User((👤 Traveler)) -->|Interacts| UI
-    
-    subgraph Frontend [🌐 React / Vite Frontend]
-        UI[Interactive UI & Forms]:::client
-        Maps[Leaflet Maps & 3D Globe]:::client
-        UI <--> Maps
+    User((👤 Traveler)) :::user
+
+    subgraph Presentation Layer [🌐 Frontend - React / Vite]
+        UI[Interactive UI & Dashboards]:::frontend
+        MapEngine[Spatial Engine: Leaflet / Globe.gl]:::frontend
+        State[State Management & Validation]:::frontend
+    end
+
+    User -->|Requests Itinerary| UI
+    UI <--> State
+    State <--> MapEngine
+
+    subgraph API Gateway [🛡️ Security & Routing]
+        Auth[JWT Authentication]:::api
+        RateLimit[Rate Limiting & CORS]:::api
+    end
+
+    UI -->|JSON/REST via Axios| Auth
+    Auth --> RateLimit
+
+    subgraph Business Logic Layer [☕ Spring Boot Backend]
+        Controller[REST Controllers]:::backend
+        Service[Itinerary Generation Service]:::backend
+        Orchestrator[🧠 AI Orchestrator / Prompt Manager]:::backend
+        RAG[Hibernate Vector RAG Service]:::backend
+        Parser[JSON Structured Response Parser]:::backend
+    end
+
+    RateLimit --> Controller
+    Controller --> Service
+    Service --> Orchestrator
+    Orchestrator <--> RAG
+    Orchestrator --> Parser
+    Parser --> Controller
+
+    subgraph External APIs [🌍 Third-Party Services]
+        OSM[OpenStreetMap API]:::external
     end
     
-    UI -->|REST API / JWT| API
-    
-    subgraph Backend [☕ Spring Boot 3 Backend]
-        API[Spring Web Controllers]:::server
-        Security[Spring Security & JWT]:::server
-        Router[🧠 AI Model Router]:::server
-        RAG[Hibernate Vector RAG]:::server
-    end
-    
-    API --> Security
-    Security --> Router
-    Security --> RAG
-    
-    subgraph AI [🤖 Pluggable AI Providers]
+    MapEngine -.->|Geocoding / Coordinates| OSM
+
+    subgraph AI Strategy [🤖 Pluggable LLM Router]
         Groq[Groq LLaMA 3.3]:::ai
         OpenAI[OpenAI GPT-4o]:::ai
         Gemini[Google Gemini 2.5]:::ai
     end
     
-    Router -.->|1. Primary| Groq
-    Router -.->|2. Fallback| OpenAI
-    Router -.->|3. Fallback| Gemini
-    
-    subgraph Database [🗄️ Persistence Layer]
-        SQL[(Core SQL Database)]:::db
+    Orchestrator -.->|1. Fast Inference| Groq
+    Orchestrator -.->|2. Complex Reasoning| OpenAI
+    Orchestrator -.->|3. Multi-Modal| Gemini
+
+    subgraph Persistence Layer [🗄️ Database Ecosystem]
+        SQL[(PostgreSQL / Relational Data)]:::db
         Vector[(Vector Embeddings)]:::db
     end
     
-    Security --> SQL
+    Service --> SQL
     RAG --> Vector
 ```
 
