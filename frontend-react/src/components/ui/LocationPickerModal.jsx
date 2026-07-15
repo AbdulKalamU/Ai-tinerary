@@ -3,18 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, MapPin, Star, Plus } from 'lucide-react';
 import ActivityImage from './ActivityImage';
 
-const MOCK_RESULTS = {
-  'For you': [
-    { id: 1, name: 'Louvre Museum', category: 'Attraction', rating: 4.8, mentions: 111, query: 'Louvre Museum Paris' },
-    { id: 2, name: 'Arc de Triomphe', category: 'Attraction', rating: 4.6, mentions: 86, query: 'Arc de Triomphe Paris' },
-    { id: 3, name: 'Eiffel Tower', category: 'Attraction', rating: 4.9, mentions: 245, query: 'Eiffel Tower Paris' }
-  ],
-  'Restaurants': [
-    { id: 4, name: 'Le Jules Verne', category: 'Fine Dining', rating: 4.7, mentions: 42, query: 'Le Jules Verne restaurant Paris' },
-    { id: 5, name: 'Café de Flore', category: 'Cafe', rating: 4.4, mentions: 156, query: 'Cafe de Flore Paris' }
-  ]
-};
-
 export default function LocationPickerModal({ isOpen, onClose, destination, onAdd }) {
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState('For you');
@@ -22,26 +10,56 @@ export default function LocationPickerModal({ isOpen, onClose, destination, onAd
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
+    const defaultSearchTerms = {
+      'For you': 'tourism',
+      'Things to do': 'attraction',
+      'Restaurants': 'restaurant',
+      'Events': 'event',
+      'Stays': 'hotel',
+      'Locations': 'place'
+    };
+    
+    // If the user's query already contains a specific place or city name, appending destination might break it.
+    // For simplicity, if query is present, we just use it directly. If they want it in the destination, they can type "cafe in Ooty".
+    // Alternatively, we append destination only if the query doesn't seem to contain a location.
+    // We'll append the destination unless the query is long enough to be a specific place.
+    const baseDest = destination.split(',')[0];
+    let searchTerm = '';
+    if (query.trim()) {
+      searchTerm = query.toLowerCase().includes(baseDest.toLowerCase()) ? query : `${query} ${baseDest}`;
+    } else {
+      searchTerm = `${defaultSearchTerms[activeTab] || 'tourism'} ${baseDest}`;
     }
+
     const delayDebounceFn = setTimeout(() => {
       setIsSearching(true);
-      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' ' + destination)}&limit=9`)
+      fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchTerm)}&limit=15&addressdetails=1`)
         .then(res => res.json())
         .then(data => {
-          const formatted = data.map((item, idx) => ({
-            id: `search-${Date.now()}-${idx}`,
-            name: item.name || item.display_name.split(',')[0],
-            category: item.type || 'Location',
-            rating: 4.5 + (Math.random() * 0.5), // Mock rating
-            query: item.display_name,
-            location: {
-              lat: parseFloat(item.lat),
-              lng: parseFloat(item.lon)
+          // Filter out less relevant types like ATMs if we are doing a generic search
+          let validData = data;
+          if (!query.trim()) {
+             validData = data.filter(item => !['atm', 'bank', 'post_box'].includes(item.type));
+          }
+          
+          const formatted = validData.slice(0, 9).map((item, idx) => {
+            // Try to extract a meaningful name
+            let itemName = item.name;
+            if (!itemName && item.address) {
+                itemName = item.address.tourism || item.address.amenity || item.address.leisure || item.address.road || item.display_name.split(',')[0];
             }
-          }));
+            return {
+              id: `search-${Date.now()}-${idx}`,
+              name: itemName || item.display_name.split(',')[0],
+              category: item.type ? item.type.replace('_', ' ') : 'Location',
+              rating: 4.0 + (Math.random()), // Mock rating 4.0 to 5.0
+              query: item.display_name,
+              location: {
+                lat: parseFloat(item.lat),
+                lng: parseFloat(item.lon)
+              }
+            };
+          });
           setSearchResults(formatted);
           setIsSearching(false);
         })
@@ -52,7 +70,7 @@ export default function LocationPickerModal({ isOpen, onClose, destination, onAd
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query, destination]);
+  }, [query, destination, activeTab]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -64,8 +82,7 @@ export default function LocationPickerModal({ isOpen, onClose, destination, onAd
 
   if (!isOpen) return null;
 
-  const baseResults = MOCK_RESULTS[activeTab] || MOCK_RESULTS['For you'];
-  const results = query.trim() ? searchResults : baseResults;
+  const results = searchResults;
 
   return (
     <AnimatePresence>
@@ -139,7 +156,7 @@ export default function LocationPickerModal({ isOpen, onClose, destination, onAd
                 <div key={item.id} className="group relative">
                   <div className="h-48 rounded-2xl overflow-hidden relative mb-3">
                     <ActivityImage 
-                      name={item.query}
+                      name={item.name}
                       destination={destination}
                       category={item.category}
                       uniqueId={item.id}

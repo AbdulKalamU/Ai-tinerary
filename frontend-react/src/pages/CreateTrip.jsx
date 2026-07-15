@@ -5,6 +5,8 @@ import { MapPin, Calendar as CalendarIcon, Users, Sparkles, Loader2, ArrowRight,
 import { generatePlan } from '../api/plans';
 import { ACTIVITIES, GROUP_TYPES, POPULAR_DESTINATIONS } from '../utils/constants';
 import { formatDateRange, calculateDuration } from '../utils/formatters';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import toast from 'react-hot-toast';
 
 const GROUP_ICONS = {
@@ -37,6 +39,25 @@ export default function CreateTrip() {
   
   const [step, setStep] = useState(initialDestination ? 2 : 1);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [loadingStep, setLoadingStep] = useState(0);
+
+  const loadingMessages = [
+    "Analyzing your preferences...",
+    "Curating top destinations...",
+    "Finding the best routes...",
+    "Booking virtual experiences...",
+    "Finalizing your itinerary..."
+  ];
+
+  useEffect(() => {
+    let interval;
+    if (isGenerating) {
+      interval = setInterval(() => {
+        setLoadingStep((prev) => (prev + 1) % loadingMessages.length);
+      }, 2500);
+    }
+    return () => clearInterval(interval);
+  }, [isGenerating]);
   const [formData, setFormData] = useState({
     destination: initialDestination,
     startDate: '',
@@ -147,15 +168,58 @@ export default function CreateTrip() {
 
   if (isGenerating) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center relative bg-[#030303]">
+      <div className="min-h-screen flex flex-col items-center justify-center relative bg-background overflow-hidden">
+        {/* Animated Background Elements */}
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+          className="absolute w-[800px] h-[800px] border border-foreground/5 rounded-full pointer-events-none"
+        />
+        <motion.div 
+          animate={{ rotate: -360 }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute w-[600px] h-[600px] border border-foreground/5 rounded-full pointer-events-none"
+        />
+        <div className="absolute w-64 h-64 bg-primary-500/20 blur-[100px] rounded-full" />
+
         <div className="relative z-10 flex flex-col items-center">
-          <Loader2 className="w-12 h-12 animate-spin text-white mb-8" strokeWidth={1.5} />
-          <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-white mb-4 text-center">
-            Designing itinerary.
+          <motion.div
+            animate={{ scale: [1, 1.1, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="mb-8"
+          >
+            <Sparkles className="w-16 h-16 text-primary-400" strokeWidth={1.5} />
+          </motion.div>
+          
+          <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-foreground mb-4 text-center">
+            Designing your journey.
           </h2>
-          <p className="text-[#A3A3A3] mb-8 text-center max-w-md font-light text-lg">
-            Curating experiences and optimizing travel routes for {formData.destination}.
-          </p>
+          
+          <div className="h-8 overflow-hidden relative w-full flex justify-center mb-8">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={loadingStep}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-muted-foreground text-center font-light text-xl absolute"
+              >
+                {loadingMessages[loadingStep]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+          
+          <motion.div 
+            className="w-48 h-1 bg-foreground/10 rounded-full overflow-hidden"
+          >
+            <motion.div 
+              className="h-full bg-foreground"
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 12.5, ease: "linear" }}
+            />
+          </motion.div>
         </div>
       </div>
     );
@@ -195,7 +259,7 @@ export default function CreateTrip() {
         </div>
 
         {/* Form Content Wrapper */}
-        <div className="relative min-h-[450px]">
+        <div className="relative">
           <AnimatePresence mode="wait" custom={1}>
             
             {/* STEP 1 */}
@@ -207,7 +271,7 @@ export default function CreateTrip() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0"
+                className="w-full"
               >
                 <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-white mb-6">
                   Where are you heading?
@@ -292,39 +356,36 @@ export default function CreateTrip() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0"
+                className="w-full"
               >
                 <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-white mb-6">
                   When are you going?
                 </h2>
                 <p className="text-[#A3A3A3] mb-12 font-light text-xl">Define your dates of travel for {formData.destination}.</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+                <div className="mb-12 relative z-50">
                   <div className="bg-[#0a0a0a] border border-[#222] rounded-3xl p-6">
                     <label className="text-xs font-medium text-[#737373] mb-4 uppercase tracking-widest flex items-center gap-2">
-                      <CalendarIcon className="w-4 h-4 text-[#555]" strokeWidth={1.5} /> Start Date
+                      <CalendarIcon className="w-4 h-4 text-[#555]" strokeWidth={1.5} /> Travel Dates
                     </label>
-                    <input
-                      type="date"
-                      value={formData.startDate}
-                      min={new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setFormData({...formData, startDate: e.target.value})}
-                      style={{ colorScheme: 'dark' }}
-                      className="w-full bg-transparent text-2xl font-light text-white focus:outline-none [&::-webkit-calendar-picker-indicator]:invert cursor-pointer"
-                    />
-                  </div>
-                  
-                  <div className="bg-[#0a0a0a] border border-[#222] rounded-3xl p-6">
-                    <label className="text-xs font-medium text-[#737373] mb-4 uppercase tracking-widest flex items-center gap-2">
-                      <CalendarIcon className="w-4 h-4 text-[#555]" strokeWidth={1.5} /> End Date
-                    </label>
-                    <input
-                      type="date"
-                      value={formData.endDate}
-                      min={formData.startDate || new Date().toISOString().split('T')[0]}
-                      onChange={(e) => setFormData({...formData, endDate: e.target.value})}
-                      style={{ colorScheme: 'dark' }}
-                      className="w-full bg-transparent text-2xl font-light text-white focus:outline-none [&::-webkit-calendar-picker-indicator]:invert cursor-pointer"
+                    <DatePicker
+                      selectsRange={true}
+                      startDate={formData.startDate ? new Date(formData.startDate) : null}
+                      endDate={formData.endDate ? new Date(formData.endDate) : null}
+                      onChange={(update) => {
+                        const [start, end] = update;
+                        setFormData({
+                          ...formData,
+                          startDate: start ? start.toISOString().split('T')[0] : '',
+                          endDate: end ? end.toISOString().split('T')[0] : ''
+                        });
+                      }}
+                      minDate={new Date()}
+                      isClearable={true}
+                      placeholderText="Select start and end dates"
+                      className="w-full bg-transparent text-xl font-light text-white focus:outline-none placeholder-[#444] cursor-pointer"
+                      wrapperClassName="w-full"
+                      dateFormat="MMM d, yyyy"
                     />
                   </div>
                 </div>
@@ -348,7 +409,7 @@ export default function CreateTrip() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0"
+                className="w-full"
               >
                 <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-white mb-6">
                   What's your vibe?
@@ -414,7 +475,7 @@ export default function CreateTrip() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0"
+                className="w-full"
               >
                 <h2 className="text-5xl md:text-6xl font-medium tracking-tighter text-white mb-12">
                   Ready to fly.
@@ -475,7 +536,7 @@ export default function CreateTrip() {
         </div>
 
         {/* Navigation Buttons (Bottom) */}
-        <div className="mt-24 pt-8 border-t border-white/5 flex justify-between items-center relative z-20">
+        <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center relative z-20">
           {step > 1 ? (
             <button
               onClick={prevStep}

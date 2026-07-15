@@ -1,5 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { AnimatePresence } from 'framer-motion';
 
 // Layout
 import PageLayout from './components/layout/PageLayout';
@@ -7,16 +8,19 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Pages
 import Landing from './pages/Landing';
-import Login from './pages/Login';
 import Register from './pages/Register';
+import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
+import SwipeDiscovery from './pages/SwipeDiscovery';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import CustomCursor from './components/ui/CustomCursor';
 import CommandPalette from './components/ui/CommandPalette';
 
 function App() {
+  const location = useLocation();
   return (
     <>
       <CustomCursor />
@@ -45,22 +49,26 @@ function App() {
         }}
       />
       
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<PageLayout><Landing /></PageLayout>} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
-        {/* Protected Routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<PageLayout><Dashboard /></PageLayout>} />
-          <Route path="/plan/new" element={<PageLayout><CreateTrip /></PageLayout>} />
-          <Route path="/plan/:id" element={<PageLayout><TripDetail /></PageLayout>} />
-        </Route>
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          {/* Public Routes */}
+          <Route path="/" element={<PageLayout><Landing /></PageLayout>} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<PageLayout><Dashboard /></PageLayout>} />
+            <Route path="/plan/new" element={<PageLayout><CreateTrip /></PageLayout>} />
+            <Route path="/plan/:id" element={<PageLayout><TripDetail /></PageLayout>} />
+            <Route path="/discover" element={<PageLayout><SwipeDiscovery /></PageLayout>} />
+            <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
+          </Route>
 
-        {/* 404 Route */}
-        <Route path="*" element={<PageLayout><NotFound /></PageLayout>} />
-      </Routes>
+          {/* 404 Route */}
+          <Route path="*" element={<PageLayout><NotFound /></PageLayout>} />
+        </Routes>
+      </AnimatePresence>
     </>
   );
 }

@@ -8,6 +8,22 @@ export default {
   theme: {
     extend: {
       colors: {
+        background: 'rgb(var(--background) / <alpha-value>)',
+        foreground: 'rgb(var(--foreground) / <alpha-value>)',
+        card: {
+          DEFAULT: 'rgb(var(--card) / <alpha-value>)',
+          foreground: 'rgb(var(--card-foreground) / <alpha-value>)',
+          border: 'rgb(var(--card-border) / <alpha-value>)',
+        },
+        muted: {
+          DEFAULT: 'rgb(var(--muted) / <alpha-value>)',
+          foreground: 'rgb(var(--muted-foreground) / <alpha-value>)',
+        },
+        border: 'rgb(var(--border) / <alpha-value>)',
+        input: 'rgb(var(--input) / <alpha-value>)',
+        'glass-bg': 'var(--glass-bg)',
+        'glass-border': 'var(--glass-border)',
+        'glass-border-hover': 'var(--glass-border-hover)',
         dark: {
           950: '#020617', // Very deep slate (almost black)
           900: '#0f172a', // Deep slate

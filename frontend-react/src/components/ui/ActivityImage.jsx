@@ -1,23 +1,50 @@
 import { useState, useEffect } from 'react';
 import { MapPin, Image as ImageIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function ActivityImage({ name, destination, category, uniqueId, className = "h-full w-full relative overflow-hidden bg-[#0A0A0B]", children }) {
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     const fetchImage = async () => {
       try {
+        const query = encodeURIComponent(`${name} ${destination || ''}`.trim());
+        const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
+        
+        if (!apiKey) {
+           setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
+           setLoading(false);
+           return;
+        }
+
+        const pexelsUrl = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
+        const res = await fetch(pexelsUrl, {
+          headers: { Authorization: apiKey }
+        });
+        
+        if (!res.ok) throw new Error("Failed to fetch from Pexels");
+        
+        const data = await res.json();
+        
+        if (data && data.photos && data.photos.length > 0) {
+          setImageUrl(data.photos[0].src.large);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {}
+
+      try {
         const isLandmark = category === 'sightseeing' || category === 'cultural' || category === 'city' || category === 'Attraction';
         
-        // 1. For specific landmarks, always try to get the real photo from Wikipedia first
         if (isLandmark) {
-          const query = encodeURIComponent(`${name}`);
-          const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${query}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`);
-          const data = await res.json();
+          const wikiQuery = encodeURIComponent(`${name}`);
+          const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${wikiQuery}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`);
+          const wikiData = await wikiRes.json();
           
-          if (data && data.query && data.query.pages) {
-            const pages = data.query.pages;
+          if (wikiData && wikiData.query && wikiData.query.pages) {
+            const pages = wikiData.query.pages;
             const pageId = Object.keys(pages)[0];
             if (pages[pageId].thumbnail && pages[pageId].thumbnail.source) {
               setImageUrl(pages[pageId].thumbnail.source);
@@ -26,12 +53,9 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
             }
           }
         }
-        
-        // 2. If it's a generic activity or Wikipedia didn't have a photo
         const searchTag = isLandmark ? 'landmark,travel' : `${category},travel`;
         setImageUrl(`https://loremflickr.com/600/400/${searchTag}/all?lock=${uniqueId}`);
-      } catch (err) {
-        // Ultimate fallback
+      } catch (fallbackErr) {
         setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
       } finally {
         setLoading(false);
@@ -41,48 +65,48 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
     fetchImage();
   }, [name, destination, category, uniqueId]);
 
-  if (loading) {
-    return (
-      <div className={`${className} flex items-center justify-center animate-pulse bg-[#111]`}>
-        <ImageIcon className="w-8 h-8 text-[#333] relative z-0" />
-        <div className="relative z-10 w-full h-full flex items-end">{children}</div>
-      </div>
-    );
-  }
+  return (
+    <div className={`${className} bg-[#111] flex flex-col items-center justify-center`}>
+      
+      {/* Loading Skeleton underneath */}
+      {(!imageLoaded || loading) && (
+        <div className="absolute inset-0 flex items-center justify-center animate-pulse bg-[#111] z-0">
+          <ImageIcon className="w-8 h-8 text-[#333]" />
+        </div>
+      )}
 
-  if (imageUrl) {
-    return (
-      <div className={className}>
-        <img 
+      {/* The actual image */}
+      {imageUrl && (
+        <motion.img 
           src={imageUrl} 
           alt={name}
-          className="absolute inset-0 w-full h-full object-cover"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: imageLoaded ? 1 : 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          onLoad={() => setImageLoaded(true)}
+          className="absolute inset-0 w-full h-full object-cover z-10"
           loading="lazy"
           onError={(e) => {
              e.target.onerror = null;
              e.target.src = `https://picsum.photos/seed/${uniqueId}/600/400`;
           }}
         />
-        {/* Render children (overlays, pills, text) passed by the parent component */}
-        {children && (
-          <div className="relative z-10 w-full h-full flex flex-col justify-end">
-            {children}
-          </div>
-        )}
-      </div>
-    );
-  }
+      )}
 
-  // Fallback if everything fails
-  return (
-    <div className={`${className} bg-[#111] flex flex-col items-center justify-center`}>
-       {!children && <MapPin className="w-8 h-8 text-[#333] mb-2 relative z-0" />}
-       {!children && <span className="text-xs text-[#555] font-medium px-4 text-center line-clamp-2 relative z-0">{name}</span>}
-       {children && (
-         <div className="relative z-10 w-full h-full flex flex-col justify-end">
-           {children}
-         </div>
-       )}
+      {/* Fallback if no image URL and not loading */}
+      {!loading && !imageUrl && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
+          <MapPin className="w-8 h-8 text-[#333] mb-2" />
+          <span className="text-xs text-[#555] font-medium px-4 text-center line-clamp-2">{name}</span>
+        </div>
+      )}
+
+      {/* Render children on top (overlays, text, buttons) */}
+      {children && (
+        <div className="relative z-20 w-full h-full flex flex-col justify-end">
+          {children}
+        </div>
+      )}
     </div>
   );
 }

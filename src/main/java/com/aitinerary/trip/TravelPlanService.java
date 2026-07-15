@@ -37,8 +37,13 @@ public class TravelPlanService {
 
     // ─── Create ───────────────────────────────────────────────
 
+    /**
+     * @deprecated Use PlanningEngine for the new multi-turn conversational AI approach.
+     */
+    @Deprecated
     @Transactional
     public TravelPlanResponse createTravelPlan(TravelPlanRequest request, UserPrincipal currentUser) {
+        log.warn("Using deprecated legacy AI engine (single-prompt generation).");
         log.info("Creating travel plan for user: {}, destination: {}", currentUser.getId(), request.getDestination());
         log.info("Using AI Provider: {}, Model: {}", aiProvider.getProviderName(), aiProvider.getModelName());
 
@@ -387,15 +392,19 @@ public class TravelPlanService {
 
         prompt.append("=== IMPORTANT RULES ===\n");
         prompt.append("1. Create exactly ").append(tripDays).append(" days in the 'days' array\n");
-        prompt.append("2. Each day should have 3-4 activities with realistic timings. BE CONCISE to avoid output truncation.\n");
-        prompt.append("3. Keep all descriptions strictly to 1-2 short sentences.\n");
+        prompt.append("2. CRITICAL: Each day MUST have a highly detailed, action-packed schedule featuring at least 4 to 6 unique activities.\n");
+        prompt.append("3. Provide a detailed Morning, Afternoon, and Evening breakdown with multiple specific venue/location names per part of the day.\n");
         prompt.append("4. Include accurate latitude/longitude coordinates\n");
         prompt.append("5. Keep imageKeyword short (1-2 words)\n");
-        prompt.append("5. Tailor activities to the traveler type: ").append(
+        prompt.append("6. CRITICAL: You MUST strictly tailor all activities to the traveler type: ").append(
             request.getGroupType() != null ? request.getGroupType() : "General"
-        ).append("\n");
-        prompt.append("6. Include a mix of popular attractions and hidden gems\n");
-        prompt.append("7. Consider travel time between locations\n");
+        ).append(". Ensure the pace, venues, and experiences perfectly match this group type.\n");
+        if (request.getActivities() != null && !request.getActivities().isEmpty()) {
+            prompt.append("7. CRITICAL: You MUST prominently feature these specific interests throughout the itinerary: ")
+                  .append(String.join(", ", request.getActivities())).append(".\n");
+        } else {
+            prompt.append("7. Include a diverse mix of popular attractions and hidden gems.\n");
+        }
         prompt.append("8. Respond with ONLY the JSON object, no additional text\n");
 
         return prompt.toString();

@@ -39,6 +39,20 @@ public class User extends BaseEntity {
     @Builder.Default
     private Role role = Role.USER;
 
+    // Extended profile fields
+    @Column(name = "display_name", length = 100)
+    private String displayName;
+
+    @Column(name = "bio", columnDefinition = "TEXT")
+    private String bio;
+
+    @Column(name = "home_city", length = 100)
+    private String homeCity;
+
+    @Column(name = "email_verified")
+    @Builder.Default
+    private Boolean emailVerified = false;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<TravelPlan> travelPlans = new ArrayList<>();

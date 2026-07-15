@@ -22,7 +22,14 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const originalRequest = error.config;
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      
+      // Do not redirect if the error is from the login endpoint itself
+      if (originalRequest.url && originalRequest.url.includes('/auth/login')) {
+        return Promise.reject(error);
+      }
+
       // Clear local storage and redirect to login if unauthorized or forbidden
       localStorage.removeItem('token');
       localStorage.removeItem('user');

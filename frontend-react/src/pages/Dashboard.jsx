@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { getAllPlans, deletePlan } from '../api/plans';
+import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // New Immersive Components
@@ -9,6 +11,7 @@ import HeroSearch from '../components/dashboard/HeroSearch';
 import CuratedJourneys from '../components/dashboard/CuratedJourneys';
 import TripCard from '../components/dashboard/TripCard';
 import EmptyState from '../components/dashboard/EmptyState';
+import DashboardBackground from '../components/dashboard/DashboardBackground';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -63,7 +66,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#030303]">
+    <div className="relative min-h-screen overflow-hidden bg-transparent">
+      <DashboardBackground />
+      
       {/* Subtle Depth Background */}
       <motion.div 
         className="fixed inset-[-50px] z-0 pointer-events-none opacity-40"
@@ -74,18 +79,49 @@ export default function Dashboard() {
         }}
       />
       
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
+      <motion.div 
+        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32"
+        initial="hidden"
+        animate="show"
+        variants={{
+          hidden: { opacity: 0 },
+          show: {
+            opacity: 1,
+            transition: { staggerChildren: 0.15, delayChildren: 0.1 }
+          }
+        }}
+      >
         
         {/* The Conversational Hero */}
-        <HeroSearch />
+        <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: 'spring', damping: 20 } } }}>
+          <HeroSearch />
+          
+          <div className="mt-8 flex justify-center">
+            <Link 
+              to="/discover"
+              className="glass-pill px-8 py-4 flex items-center gap-3 hover:scale-105 transition-all group"
+            >
+              <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-primary-400 group-hover:animate-spin" />
+              </div>
+              <span className="font-medium text-foreground">Not sure where to go? Start Swiping</span>
+            </Link>
+          </div>
+        </motion.div>
 
         {/* Curated Inspirational Journeys */}
-        <div className="mt-10 border-t border-white/5 pt-10">
+        <motion.div 
+          className="mt-10 border-t border-white/5 pt-10"
+          variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: 'spring', damping: 20 } } }}
+        >
           <CuratedJourneys />
-        </div>
+        </motion.div>
 
         {/* Your Workspaces / Itineraries */}
-        <div className="mt-20 border-t border-white/5 pt-16">
+        <motion.div 
+          className="mt-20 border-t border-white/5 pt-16"
+          variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: 'spring', damping: 20 } } }}
+        >
           <div className="mb-10">
             <h2 className="text-3xl font-medium tracking-tight text-white mb-2">Your Workspaces.</h2>
             <p className="text-[#A3A3A3] font-light">Continue planning your upcoming adventures.</p>
@@ -121,8 +157,8 @@ export default function Dashboard() {
               ))}
             </motion.div>
           )}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }

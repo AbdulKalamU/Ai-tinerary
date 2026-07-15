@@ -39,13 +39,14 @@ public class PromptManager {
                 **Travel Pace:** {{travelPace}}
                 **Dietary Restrictions:** {{dietaryRestrictions}}
 
-                For each day, provide:
-                1. A morning, afternoon, and evening activity with specific venue/location names
-                2. Estimated time for each activity
-                3. Recommended restaurants or dining options (respecting dietary restrictions)
-                4. Transportation suggestions between locations
-                5. Estimated costs in local currency and USD
-                6. Insider tips and cultural etiquette notes
+                For each day, provide a highly detailed, action-packed schedule featuring at least 4 to 6 unique activities:
+                1. A detailed Morning, Afternoon, and Evening breakdown with multiple specific venue/location names per part of the day.
+                2. Hidden gems, local secrets, or cultural immersion experiences integrated throughout the day.
+                3. Estimated time and duration for each activity to ensure a satisfying, full day.
+                4. Recommended restaurants or dining options for every meal (respecting dietary restrictions) including cafes or snack breaks.
+                5. Transportation suggestions between locations and walking routes.
+                6. Estimated costs in local currency and USD.
+                7. Insider tips, dress codes, and cultural etiquette notes.
 
                 Respond ONLY with valid JSON in this structure:
                 {
@@ -58,10 +59,12 @@ public class PromptManager {
                       "date": "YYYY-MM-DD",
                       "theme": "Day theme",
                       "activities": [
+                        // YOU MUST PROVIDE AT LEAST 5 ACTIVITIES PER DAY INCLUDING MEALS.
+                        // Example: 1 Morning activity, 1 Lunch, 1 Afternoon activity, 1 Evening activity, 1 Dinner
                         {
                           "time": "09:00",
                           "name": "Activity name",
-                          "description": "Details",
+                          "description": "Very detailed description",
                           "location": "Specific location",
                           "duration": "2 hours",
                           "estimatedCost": number,

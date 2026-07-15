@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Menu, X, LogOut, User, ChevronDown } from 'lucide-react';
+import { Menu, X, LogOut, User, ChevronDown, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -41,13 +43,12 @@ export default function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {!isAuthenticated ? (
               <>
-                <Link to="/login" className="btn-ghost">Log In</Link>
-                <Link to="/register" className="btn-primary text-sm px-4 py-2">Sign Up</Link>
+                <Link to="/register" className="btn-primary text-sm px-6 py-2">Sign Up</Link>
               </>
             ) : (
               <div className="flex items-center space-x-4">
                 <Link to="/dashboard" className="btn-ghost text-[#A3A3A3] hover:text-white flex items-center gap-2">Dashboard</Link>
-                <Link to="/plan/new" className="bg-white text-black px-4 py-2 rounded-full text-xs font-medium hover:bg-gray-100 transition-colors">New Trip</Link>
+                <Link to="/plan/new" className="bg-foreground text-background px-4 py-2 rounded-full text-xs font-medium hover:scale-105 transition-all shadow-md">New Trip</Link>
                 
                 {/* Profile Dropdown */}
                 <div className="relative">
@@ -75,6 +76,14 @@ export default function Navbar() {
                           <p className="text-xs text-[#737373] truncate">{user?.email}</p>
                         </div>
                         <div className="py-1">
+                          <Link
+                            to="/profile"
+                            onClick={() => setIsProfileDropdownOpen(false)}
+                            className="w-full text-left px-4 py-2 text-sm text-foreground hover:bg-white/5 flex items-center space-x-2 transition-colors"
+                          >
+                            <User className="w-4 h-4" />
+                            <span>View Profile</span>
+                          </Link>
                           <button
                             onClick={handleLogout}
                             className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 flex items-center space-x-2 transition-colors"
@@ -116,13 +125,6 @@ export default function Navbar() {
               {!isAuthenticated ? (
                 <div className="flex flex-col space-y-2 mt-4">
                   <Link 
-                    to="/login" 
-                    className="w-full btn-secondary text-center"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Log In
-                  </Link>
-                  <Link 
                     to="/register" 
                     className="w-full btn-primary text-center"
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -146,11 +148,21 @@ export default function Navbar() {
 
                   <Link 
                     to="/plan/new" 
-                    className="px-3 py-2 rounded-lg text-base font-medium text-primary-400 hover:bg-primary-500/10"
+                    className="px-3 py-2 rounded-lg text-base font-medium text-foreground hover:bg-foreground/10"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     + New Trip
                   </Link>
+
+                  <Link 
+                    to="/profile" 
+                    className="px-3 py-2 rounded-lg text-base font-medium text-foreground hover:bg-foreground/10 flex items-center space-x-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <User className="w-5 h-5" />
+                    <span>My Profile</span>
+                  </Link>
+
                   <button
                     onClick={() => {
                       handleLogout();

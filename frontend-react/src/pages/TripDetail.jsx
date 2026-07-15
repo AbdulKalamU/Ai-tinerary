@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import ActivityImage from '../components/ui/ActivityImage';
 import LocationPickerModal from '../components/ui/LocationPickerModal';
 import { DaySkeleton } from '../components/ui/Skeleton';
+import TravelCompanionWidget from '../components/companion/TravelCompanionWidget';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -169,7 +170,13 @@ export default function TripDetail() {
   if (!plan) return null;
 
   return (
-    <div className="bg-[#030303] h-screen text-white flex flex-col overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0, filter: 'blur(10px)' }}
+      animate={{ opacity: 1, filter: 'blur(0px)' }}
+      exit={{ opacity: 0, filter: 'blur(10px)' }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-[#030303] h-screen text-white flex flex-col overflow-hidden"
+    >
       {/* Immersive Hero Header */}
       <div className="relative h-[45vh] w-full shrink-0">
         <ActivityImage 
@@ -222,10 +229,10 @@ export default function TripDetail() {
       <div className="flex flex-1 relative -top-8 bg-[#030303] rounded-t-[2rem] z-20 overflow-hidden">
         
         {/* Left Pane: Itinerary Feed */}
-        <div className="w-full lg:w-1/2 xl:w-5/12 overflow-y-auto p-8 md:p-12 hide-scrollbar pb-32">
+        <div className="w-full lg:w-1/2 xl:w-5/12 overflow-y-auto hide-scrollbar pb-32 px-8 md:px-12 relative">
           
           {/* Navigation Tabs */}
-          <div className="flex gap-6 border-b border-white/10 mb-10 pb-4 sticky top-0 bg-[#030303]/95 backdrop-blur-xl z-30 -mx-4 px-4">
+          <div className="flex gap-6 border-b border-white/10 mb-10 pb-4 sticky top-0 bg-[#030303] z-30 pt-8 md:pt-12 -mx-8 px-8 md:-mx-12 md:px-12">
             {['itinerary', 'budget', 'culture', 'preparation'].map((tab) => (
               <button
                 key={tab}
@@ -241,10 +248,22 @@ export default function TripDetail() {
 
           {activeTab === 'itinerary' && (
             <DragDropContext onDragEnd={onDragEnd}>
+              <motion.div
+                initial="hidden"
+                animate="show"
+                variants={{
+                  hidden: { opacity: 0 },
+                  show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.2 } }
+                }}
+              >
               {parsedData?.days?.map((dayObj, index) => (
-                <div key={index} className="mb-12">
+                <motion.div 
+                  key={index} 
+                  className="mb-12"
+                  variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { type: 'spring', damping: 25 } } }}
+                >
                   {/* Day Header */}
-                  <div className="flex items-center justify-between mb-6 sticky top-16 bg-[#030303]/90 backdrop-blur-md py-4 z-20 -mx-4 px-4">
+                  <div className="flex items-center justify-between mb-6 sticky top-[88px] bg-[#030303] py-4 z-20 -mx-8 px-8 md:-mx-12 md:px-12">
                     <div className="flex items-baseline gap-4">
                       <span className="text-sm font-medium tracking-widest text-[#A3A3A3] uppercase">Day {dayObj.day}</span>
                       <h3 className="text-2xl font-medium tracking-tight text-white">{dayObj.title}</h3>
@@ -254,7 +273,7 @@ export default function TripDetail() {
                         setActiveDayForPicker(dayObj.day);
                         setIsPickerOpen(true);
                       }}
-                      className="glass-pill-hover w-8 h-8 rounded-full flex items-center justify-center text-white bg-white/5 border border-white/10"
+                      className="glass-pill-hover w-8 h-8 rounded-full flex items-center justify-center text-white bg-white/5 border border-white/10 shrink-0"
                     >
                       <Plus className="w-4 h-4" />
                     </button>
@@ -309,8 +328,9 @@ export default function TripDetail() {
                       </div>
                     )}
                   </Droppable>
-                </div>
+                </motion.div>
               ))}
+              </motion.div>
             </DragDropContext>
           )}
 
@@ -460,6 +480,9 @@ export default function TripDetail() {
         destination={plan.destination}
         onAdd={handleAddLocation}
       />
-    </div>
+      
+      {/* Floating Travel Companion */}
+      <TravelCompanionWidget planId={id} plan={plan} />
+    </motion.div>
   );
 }

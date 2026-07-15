@@ -10,36 +10,25 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleDemoLogin = (e) => {
-    e.preventDefault()
-    setIsLoading(true)
-    // Simulate network delay
-    setTimeout(() => {
-      const demoUser = { id: 999, username: 'DemoTraveler', email: 'demo@ai-tinerary.com' }
-      localStorage.setItem('token', 'demo-fake-jwt-token')
-      localStorage.setItem('user', JSON.stringify(demoUser))
-      
-      // Force page reload to let AuthContext pick up the fake token from localStorage
-      window.location.href = '/dashboard'
-    }, 800)
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
+    
     if (!email || !password) {
       toast.error('Please fill in all fields')
       return
     }
+
     setIsLoading(true)
     try {
       await login(email, password)
       toast.success('Welcome back!')
       navigate('/dashboard')
     } catch (err) {
-      toast.error(err.message || 'Invalid email or password')
+      toast.error(err.message || 'Login failed')
     } finally {
       setIsLoading(false)
     }
@@ -56,13 +45,13 @@ export default function Login() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
             <span className="text-[11px] uppercase tracking-[0.2em] text-[#737373] font-medium border border-[#333] px-4 py-2 rounded-full mb-8 inline-block">
-              Authentication
+              Welcome Back
             </span>
             <h2 className="text-6xl font-medium tracking-tighter text-white mb-6 leading-[0.95]">
-              Return to your <br /> itinerary.
+              Resume your <br /> journey.
             </h2>
             <p className="text-[#A3A3A3] text-xl font-light tracking-tight max-w-sm leading-relaxed">
-              Sign in to access your curated travel plans and preferences.
+              Sign in to continue architecting bespoke travel itineraries.
             </p>
           </motion.div>
         </div>
@@ -85,13 +74,13 @@ export default function Login() {
             Sign In
           </h1>
           <p className="text-[#737373] font-light mb-10 text-sm">
-            Enter your credentials to continue.
+            Access your intelligent travel plans.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-xs font-medium text-[#A3A3A3] uppercase tracking-widest mb-3">
-                Username or Email
+                Email or Username
               </label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#555]" strokeWidth={1.5} />
@@ -99,7 +88,7 @@ export default function Login() {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="testuser or you@example.com"
+                  placeholder="traveler123 or you@example.com"
                   className="w-full px-4 py-3 pl-12 bg-transparent border-b border-[#333] text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors text-sm rounded-none"
                   autoComplete="username"
                 />
@@ -130,7 +119,7 @@ export default function Login() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 pt-4">
+            <div className="pt-4">
               <button
                 type="submit"
                 disabled={isLoading}
@@ -144,15 +133,6 @@ export default function Login() {
                 ) : (
                   'Sign In'
                 )}
-              </button>
-
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                disabled={isLoading}
-                className="w-full bg-black border border-[#333] text-[#A3A3A3] py-4 rounded-full text-sm font-medium hover:border-white hover:text-white transition-colors duration-300 disabled:opacity-50"
-              >
-                View Demo
               </button>
             </div>
           </form>

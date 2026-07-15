@@ -153,5 +153,17 @@ npm run dev
 
 ---
 
+## 🚀 Future Roadmap (Coming Soon)
+
+We have a massive vision for AI-Tinerary! Here are the features currently in the pipeline for future sprints:
+
+*   **🔑 Google OAuth2 Social Login:** Allowing users to sign up in 1-click using their Google account via Spring Security OAuth2.
+*   **📄 Export to PDF:** Using `html2pdf.js` to allow users to generate a beautiful, branded, and printable PDF of their day-by-day travel plan.
+*   **📧 Email Reminders:** Using Spring Boot Mail to email generated itineraries to users, and automated reminders 3 days before their trip begins.
+*   **🤝 Collaborative "Multiplayer" Editing:** Integrating WebSockets to allow multiple friends to view and drag-and-drop activities on the same itinerary in real-time.
+*   **🌦️ Live Weather Integration:** Connecting to the OpenWeatherMap API to inject the actual weather forecast for the specific trip dates into the UI.
+
+---
+
 ## 📄 License
 This project is licensed under the **MIT License**.

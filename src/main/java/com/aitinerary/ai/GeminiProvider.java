@@ -81,6 +81,11 @@ public class GeminiProvider implements AiProvider {
                 lastException = e;
                 log.warn("Attempt {}/{} failed: {}", attempt, maxRetries, e.getMessage());
                 
+                if (e.getMessage() != null && e.getMessage().contains("HTTP 429")) {
+                    log.error("Rate limit hit (HTTP 429). Bypassing retries for instant fallback.");
+                    throw new RuntimeException("Rate limit hit", e);
+                }
+
                 if (attempt < maxRetries) {
                     int delaySeconds = attempt * 2;
                     log.info("Retrying in {} seconds...", delaySeconds);

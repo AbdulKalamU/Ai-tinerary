@@ -34,4 +34,7 @@ public class UserPreferences extends BaseEntity {
 
     @Column(name = "accessibility_needs", columnDefinition = "TEXT")
     private String accessibilityNeeds;
+
+    @Column(name = "travel_interests", columnDefinition = "TEXT")
+    private String travelInterests;
 }
