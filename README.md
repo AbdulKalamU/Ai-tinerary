@@ -1,25 +1,27 @@
 <div align="center">
-  <h1>🌍 AI-Tinerary</h1>
+  <h1>🌍 Lumina (AI-Tinerary)</h1>
   <p><strong>The Future of AI-Powered Travel Planning</strong></p>
 
   [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg?style=for-the-badge&logo=java)](https://openjdk.org/)
   [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.0-brightgreen.svg?style=for-the-badge&logo=springboot)](https://spring.io/projects/spring-boot)
   [![React](https://img.shields.io/badge/React-18-blue.svg?style=for-the-badge&logo=react)](https://react.dev/)
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://postgresql.org/)
+  [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black.svg?style=for-the-badge&logo=vercel)](https://vercel.com/)
+  [![Render](https://img.shields.io/badge/Backend_on-Render-46E3B7.svg?style=for-the-badge&logo=render)](https://render.com/)
 </div>
 
 <br/>
 
 ## 🤖 What is it doing?
 
-AI-Tinerary is a full-stack web application that takes the stress out of travel planning by using Large Language Models to generate highly detailed, personalized travel itineraries in seconds. 
+Lumina is a full-stack, production-ready web application that takes the stress out of travel planning by using Large Language Models to generate highly detailed, personalized travel itineraries in seconds. 
 
-Here is exactly what happens when you hit "Generate Trip":
-1. **User Input:** You enter your destination, dates, and preferences in the React frontend.
-2. **AI Routing:** The Spring Boot backend receives the request and dynamically routes it to the most capable, available AI Provider (Groq LLaMA 3.3, OpenAI GPT-4o, or Google Gemini).
-3. **RAG Context:** Before asking the AI, the backend uses `hibernate-vector` to fetch specific local knowledge (like hidden gems or cultural norms) from our vector database and injects it into the prompt.
-4. **Data Synthesis:** The AI generates a structured JSON response detailing day-by-day activities, estimated costs, and real-world map coordinates.
-5. **Interactive Visualization:** The frontend parses this data and renders it onto a 3D interactive globe and 2D Leaflet maps, allowing you to visually explore your trip!
+Here is exactly what happens under the hood when you hit "Generate Trip":
+1. **User Input:** You enter your destination, dates, and preferences into a stunning React glassmorphism UI.
+2. **AI Routing:** The Spring Boot backend securely receives the request and dynamically routes it to the most capable AI Provider (Groq LLaMA 3.3, OpenAI GPT-4o, or Google Gemini).
+3. **Data Synthesis:** The AI generates a structured JSON response detailing day-by-day activities, estimated costs, safety tips, cultural etiquette, and real-world map locations.
+4. **Interactive Visualization:** The frontend parses this data and renders it onto interactive UI cards and a dynamic Leaflet map, allowing you to visually explore your trip!
+5. **Smart Fallback Imagery:** High-quality imagery is dynamically fetched for every location using Pexels API, with intelligent fallbacks to Wikipedia's open image databases.
 
 ---
 
@@ -28,53 +30,44 @@ Here is exactly what happens when you hit "Generate Trip":
 ```mermaid
 graph TD
     classDef user fill:#8a2be2,stroke:#333,stroke-width:2px,color:#fff
-    classDef frontend fill:#61dafb,stroke:#333,stroke-width:2px,color:#000
+    classDef frontend fill:#000000,stroke:#333,stroke-width:2px,color:#fff
     classDef api fill:#e67e22,stroke:#333,stroke-width:2px,color:#fff
     classDef backend fill:#6db33f,stroke:#333,stroke-width:2px,color:#fff
-    classDef db fill:#336791,stroke:#333,stroke-width:2px,color:#fff
+    classDef db fill:#3fcf8e,stroke:#333,stroke-width:2px,color:#000
     classDef ai fill:#ff9900,stroke:#333,stroke-width:2px,color:#000
     classDef external fill:#95a5a6,stroke:#333,stroke-width:2px,color:#fff
 
     User(("👤 Traveler")):::user
 
-    subgraph Presentation Layer [🌐 Frontend - React / Vite]
-        UI["Interactive UI & Dashboards"]:::frontend
-        MapEngine["Spatial Engine: Leaflet / Globe.gl"]:::frontend
-        State["State Management & Validation"]:::frontend
+    subgraph Presentation Layer [🌐 Frontend - Hosted on Vercel]
+        UI["React / Vite App"]:::frontend
+        MapEngine["Spatial Engine: Leaflet"]:::frontend
+        State["State Management"]:::frontend
     end
 
     User -->|Requests Itinerary| UI
     UI <--> State
     State <--> MapEngine
 
-    subgraph API Gateway [🛡️ Security & Routing]
-        Auth["JWT Authentication"]:::api
-        RateLimit["Rate Limiting & CORS"]:::api
+    subgraph Business Logic Layer [☕ Spring Boot Backend - Hosted on Render]
+        Auth["JWT Authentication Filters"]:::api
+        Controller["REST Controllers"]:::backend
+        Service["Itinerary Service"]:::backend
+        Orchestrator["🧠 AI Prompt Orchestrator"]:::backend
     end
 
     UI -->|JSON/REST via Axios| Auth
-    Auth --> RateLimit
-
-    subgraph Business Logic Layer [☕ Spring Boot Backend]
-        Controller["REST Controllers"]:::backend
-        Service["Itinerary Generation Service"]:::backend
-        Orchestrator["🧠 AI Orchestrator / Prompt Manager"]:::backend
-        RAG["Hibernate Vector RAG Service"]:::backend
-        Parser["JSON Structured Response Parser"]:::backend
-    end
-
-    RateLimit --> Controller
+    Auth --> Controller
     Controller --> Service
     Service --> Orchestrator
-    Orchestrator <--> RAG
-    Orchestrator --> Parser
-    Parser --> Controller
 
     subgraph External APIs [🌍 Third-Party Services]
         OSM["OpenStreetMap API"]:::external
+        Images["Pexels / Wikipedia API"]:::external
     end
     
-    MapEngine -.->|Geocoding / Coordinates| OSM
+    MapEngine -.->|Map Tiles| OSM
+    UI -.->|Dynamic Cover Photos| Images
 
     subgraph AI Strategy [🤖 Pluggable LLM Router]
         Groq["Groq LLaMA 3.3"]:::ai
@@ -82,85 +75,75 @@ graph TD
         Gemini["Google Gemini 2.5"]:::ai
     end
     
-    Orchestrator -.->|1. Fast Inference| Groq
-    Orchestrator -.->|2. Complex Reasoning| OpenAI
-    Orchestrator -.->|3. Multi-Modal| Gemini
+    Orchestrator -.->|Fast Inference| Groq
+    Orchestrator -.->|Complex Reasoning| OpenAI
+    Orchestrator -.->|Multi-Modal| Gemini
 
-    subgraph Persistence Layer [🗄️ Database Ecosystem]
-        SQL[("PostgreSQL / Relational Data")]:::db
-        Vector[("Vector Embeddings")]:::db
+    subgraph Persistence Layer [🗄️ Database Ecosystem - Supabase]
+        SQL[("PostgreSQL")]:::db
     end
     
     Service --> SQL
-    RAG --> Vector
 ```
 
 ---
 
-## 🚀 Step-by-Step Local Setup
+## 🚀 Production Deployment
+
+This application is fully containerized and deployed to the cloud:
+* **Frontend:** Deployed globally on **Vercel's** Edge Network for sub-second load times.
+* **Backend:** Hosted as a Web Service on **Render**, utilizing Docker and Java 17.
+* **Database:** Powered by **Supabase PostgreSQL**, utilizing Flyway for automated schema migrations.
+
+---
+
+## 💻 Step-by-Step Local Setup
 
 Want to run this locally on your own machine? Follow these exact steps:
 
 ### Prerequisites
-Before you start, make sure you have installed:
 *   **Java 17** or higher
 *   **Node.js** (v18+) and **npm**
 *   Get a free API key from [Groq](https://console.groq.com/) or [Google Gemini](https://aistudio.google.com/)
+*   A local PostgreSQL database or Supabase connection string.
 
 ### Step 1: Clone the Repository
-Open your terminal and download the code to your machine:
 ```bash
 git clone https://github.com/AbdulKalamU/Ai-tinerary.git
 cd Ai-tinerary
 ```
 
 ### Step 2: Configure Environment Variables
-The app needs your API keys to talk to the AI.
 1. Create a copy of the example environment file:
    ```bash
    cp .env.example .env.local
    ```
-2. Open `.env.local` in any text editor.
-3. Paste your Groq or Gemini API key into the respective field. 
-4. Add a random long string for the `JWT_SECRET` (this is used to secure user logins).
+2. Open `.env.local` and paste your Groq or Gemini API key. 
+3. Configure your `DB_USERNAME`, `DB_PASSWORD`, and `DB_HOST` to point to your local PostgreSQL instance.
 
 ### Step 3: Start the Spring Boot Backend
-Our Java backend uses Maven. You don't even need to install Maven yourself, it comes with a wrapper (`mvnw`) that handles it for you!
+Our Java backend uses Maven. Run the wrapper (`mvnw`) to automatically download dependencies and start the server:
 ```bash
 # Run this command in the root Ai-tinerary directory
 ./mvnw spring-boot:run
 ```
-*Wait until you see `Started AiTineraryApplication` in the console. The backend is now securely running on `http://localhost:8080`! (It automatically uses a local H2 database, so no SQL setup is needed).*
+*The backend is now securely running on `http://localhost:8080`!*
 
 ### Step 4: Start the React Frontend
-Open a **new terminal tab** (leave the backend running in the first one) and navigate to the frontend directory:
+Open a **new terminal tab** and navigate to the frontend directory:
 ```bash
 cd frontend-react
-
-# Install all the necessary frontend libraries
 npm install
-
-# Start the Vite development server
 npm run dev
 ```
-*Vite is incredibly fast. Within seconds, it will tell you the frontend is running at `http://localhost:5173`. Open that link in your browser!*
-
-### Step 5: Test it out!
-1. Open `http://localhost:5173` in your browser.
-2. Create a new account on the login page.
-3. Enter a dream destination like "Tokyo, Japan" for a 5-day trip.
-4. Watch the AI generate your highly detailed travel itinerary!
+*Vite will start the frontend at `http://localhost:5173`. Open that link in your browser!*
 
 ---
 
-## 🚀 Future Roadmap (Coming Soon)
+## 🌟 Future Roadmap
 
-We have a massive vision for AI-Tinerary! Here are the features currently in the pipeline for future sprints:
-
-*   **🔑 Google OAuth2 Social Login:** Allowing users to sign up in 1-click using their Google account via Spring Security OAuth2.
-*   **📄 Export to PDF:** Using `html2pdf.js` to allow users to generate a beautiful, branded, and printable PDF of their day-by-day travel plan.
-*   **📧 Email Reminders:** Using Spring Boot Mail to email generated itineraries to users, and automated reminders 3 days before their trip begins.
-*   **🤝 Collaborative "Multiplayer" Editing:** Integrating WebSockets to allow multiple friends to view and drag-and-drop activities on the same itinerary in real-time.
+*   **📄 Export to PDF:** Allow users to generate a beautiful, branded, and printable PDF of their day-by-day travel plan.
+*   **🤝 Collaborative Editing:** Integrating WebSockets to allow multiple friends to view and drag-and-drop activities on the same itinerary in real-time.
 *   **🌦️ Live Weather Integration:** Connecting to the OpenWeatherMap API to inject the actual weather forecast for the specific trip dates into the UI.
 
 ---
