@@ -14,9 +14,7 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
         const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
         
         if (!apiKey) {
-           setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
-           setLoading(false);
-           return;
+           throw new Error("No Pexels API Key configured, falling back to Wikipedia/LoremFlickr");
         }
 
         const pexelsUrl = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
