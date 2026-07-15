@@ -51,7 +51,11 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
             }
           }
         }
-        const searchTag = isLandmark ? 'landmark,travel' : `${category},travel`;
+        // Extract the first significant word (longer than 3 chars) from the name for a better image search
+        const words = name.replace(/[^a-zA-Z\s]/g, '').split(' ');
+        const mainKeyword = words.find(w => w.length > 3) || words[0] || category;
+        const searchTag = `${mainKeyword.toLowerCase()},travel`;
+        
         setImageUrl(`https://loremflickr.com/600/400/${searchTag}/all?lock=${uniqueId}`);
       } catch (fallbackErr) {
         setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
