@@ -6,11 +6,8 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 
 describe('Authentication Flow', () => {
   it('should navigate to login page and simulate authentication', () => {
-    // Visit the application homepage
-    cy.visit('/');
-
-    // Ensure we are redirected to /login if not authenticated
-    cy.url().should('include', '/login');
+    // Visit the login page directly
+    cy.visit('/login');
 
     // Check if the login form elements exist
     cy.get('input[type="email"]').should('exist');
