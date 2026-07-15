@@ -69,3 +69,27 @@ jobs:
           name: docker-image
           path: aitinerary-latest.tar.gz
           retention-days: 7
+
+  frontend-test:
+    name: Frontend Test (Cypress)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        working-directory: ./frontend-react
+        run: npm ci
+
+      - name: Run Cypress E2E Tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./frontend-react
+          build: npm run build
+          start: npm run dev
+          wait-on: 'http://localhost:5173'
