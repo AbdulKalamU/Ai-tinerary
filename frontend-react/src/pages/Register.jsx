@@ -68,7 +68,13 @@ export default function Register() {
   return (
     <div className="min-h-screen flex bg-black text-white font-sans selection:bg-white selection:text-black">
       {/* Left Panel - Editorial Typography */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-black items-center justify-center p-12 border-r border-[#111]">
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-12 border-r border-[#111]">
+        {/* Background Image with Dark Overlay */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1506012787146-f92b2d7d6d96?q=80&w=2069&auto=format&fit=crop')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80 z-0"></div>
         <div className="relative z-10 w-full max-w-lg">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
