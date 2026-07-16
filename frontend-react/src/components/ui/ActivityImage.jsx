@@ -11,53 +11,25 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
     const fetchImage = async () => {
       try {
         const query = encodeURIComponent(`${name} ${destination || ''}`.trim());
-        const apiKey = import.meta.env.VITE_PEXELS_API_KEY;
         
-        if (!apiKey) {
-           throw new Error("No Pexels API Key configured, falling back to Wikipedia/LoremFlickr");
-        }
-
-        const pexelsUrl = `https://api.pexels.com/v1/search?query=${query}&per_page=1`;
-        const res = await fetch(pexelsUrl, {
-          headers: { Authorization: apiKey }
-        });
+        // Fetch from our secure backend endpoint. 
+        // The API key is safely stored on the backend, not exposed to the browser!
+        const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const res = await fetch(`${backendUrl}/api/v1/places/photo?query=${query}`);
         
-        if (!res.ok) throw new Error("Failed to fetch from Pexels");
-        
-        const data = await res.json();
-        
-        if (data && data.photos && data.photos.length > 0) {
-          setImageUrl(data.photos[0].src.large);
-          setLoading(false);
-          return;
-        }
-      } catch (err) {}
-
-      try {
-        const isLandmark = category === 'sightseeing' || category === 'cultural' || category === 'city' || category === 'Attraction';
-        
-        if (isLandmark) {
-          const wikiQuery = encodeURIComponent(`${name}`);
-          const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${wikiQuery}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`);
-          const wikiData = await wikiRes.json();
-          
-          if (wikiData && wikiData.query && wikiData.query.pages) {
-            const pages = wikiData.query.pages;
-            const pageId = Object.keys(pages)[0];
-            if (pages[pageId].thumbnail && pages[pageId].thumbnail.source) {
-              setImageUrl(pages[pageId].thumbnail.source);
-              setLoading(false);
-              return;
-            }
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.url) {
+            setImageUrl(data.url);
+            setLoading(false);
+            return;
           }
         }
-        // Extract the first significant word (longer than 3 chars) from the name for a better image search
-        const words = name.replace(/[^a-zA-Z\s]/g, '').split(' ');
-        const mainKeyword = words.find(w => w.length > 3) || words[0] || category;
-        const searchTag = `${mainKeyword.toLowerCase()},travel`;
         
-        setImageUrl(`https://loremflickr.com/600/400/${searchTag}/all?lock=${uniqueId}`);
-      } catch (fallbackErr) {
+        // Fallback if backend fails
+        setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
+      } catch (err) {
+        // Ultimate fallback
         setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
       } finally {
         setLoading(false);
