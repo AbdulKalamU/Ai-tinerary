@@ -24,7 +24,6 @@ export default function TripCard({ plan, onDelete }) {
       {/* Background Image */}
       <ActivityImage 
         name={plan.destination} 
-        destination={plan.destination}
         category="city"
         uniqueId={plan.id || 1}
         className="absolute inset-0 w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out"

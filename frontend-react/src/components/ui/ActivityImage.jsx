@@ -26,8 +26,35 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
           }
         }
         
-        // Fallback if backend fails
-        setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
+        // --- SMART FALLBACK ---
+        // If Google Places fails (e.g., generic activity), extract keywords for a smart stock photo
+        const isLandmark = category === 'sightseeing' || category === 'cultural' || category === 'city' || category === 'Attraction';
+        
+        if (isLandmark) {
+          try {
+            const wikiQuery = encodeURIComponent(`${name}`);
+            const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${wikiQuery}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`);
+            const wikiData = await wikiRes.json();
+            
+            if (wikiData && wikiData.query && wikiData.query.pages) {
+              const pages = wikiData.query.pages;
+              const pageId = Object.keys(pages)[0];
+              if (pages[pageId].thumbnail && pages[pageId].thumbnail.source) {
+                setImageUrl(pages[pageId].thumbnail.source);
+                setLoading(false);
+                return;
+              }
+            }
+          } catch (e) {}
+        }
+        
+        // Keyword extraction for LoremFlickr
+        const words = name.replace(/[^a-zA-Z\s]/g, '').split(' ');
+        const mainKeyword = words.find(w => w.length > 4) || words[0] || category || 'travel';
+        const searchTag = `${mainKeyword.toLowerCase()},travel`;
+        
+        setImageUrl(`https://loremflickr.com/600/400/${searchTag}/all?lock=${uniqueId}`);
+
       } catch (err) {
         // Ultimate fallback
         setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);

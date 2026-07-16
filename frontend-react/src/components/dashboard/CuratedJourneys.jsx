@@ -112,7 +112,6 @@ const JourneyCard = ({ journey, onClick }) => (
   >
     <ActivityImage
       name={journey.imageQuery}
-      destination={journey.location}
       category={journey.category}
       uniqueId={journey.id}
       className="absolute inset-0 w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out"
