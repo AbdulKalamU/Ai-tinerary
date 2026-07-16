@@ -180,7 +180,6 @@ export default function TripDetail() {
       <div className="relative h-[45vh] w-full shrink-0">
         <ActivityImage 
           name={plan.destination} 
-          destination={plan.destination} 
           category="city" 
           uniqueId={plan.id}
           className="absolute inset-0 w-full h-full object-cover"
