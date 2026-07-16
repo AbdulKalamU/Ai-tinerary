@@ -12,7 +12,6 @@ import toast from 'react-hot-toast';
 import ActivityImage from '../components/ui/ActivityImage';
 import LocationPickerModal from '../components/ui/LocationPickerModal';
 import { DaySkeleton } from '../components/ui/Skeleton';
-import TravelCompanionWidget from '../components/companion/TravelCompanionWidget';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -480,9 +479,7 @@ export default function TripDetail() {
         destination={plan.destination}
         onAdd={handleAddLocation}
       />
-      
-      {/* Floating Travel Companion */}
-      <TravelCompanionWidget planId={id} plan={plan} />
+
     </motion.div>
   );
 }

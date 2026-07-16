@@ -13,7 +13,6 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
-import SwipeDiscovery from './pages/SwipeDiscovery';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import CustomCursor from './components/ui/CustomCursor';
@@ -61,7 +60,6 @@ function App() {
             <Route path="/dashboard" element={<PageLayout><Dashboard /></PageLayout>} />
             <Route path="/plan/new" element={<PageLayout><CreateTrip /></PageLayout>} />
             <Route path="/plan/:id" element={<PageLayout><TripDetail /></PageLayout>} />
-            <Route path="/discover" element={<PageLayout><SwipeDiscovery /></PageLayout>} />
             <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
           </Route>
 
