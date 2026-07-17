@@ -1,6 +1,6 @@
 package com.aitinerary.discovery;
 
-import com.aitinerary.ai.AiProvider;
+import com.aitinerary.ai.ModelRouter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +13,15 @@ import java.util.List;
 @Slf4j
 public class DiscoveryService {
 
-    private final AiProvider aiProvider;
+    private final ModelRouter modelRouter;
     private final ObjectMapper objectMapper;
     
     private List<TrendingDestination> cachedDestinations = new ArrayList<>();
     private long lastFetchTime = 0;
     private static final long CACHE_DURATION_MS = 3600000; // 1 hour
 
-    public DiscoveryService(AiProvider aiProvider, ObjectMapper objectMapper) {
-        this.aiProvider = aiProvider;
+    public DiscoveryService(ModelRouter modelRouter, ObjectMapper objectMapper) {
+        this.modelRouter = modelRouter;
         this.objectMapper = objectMapper;
     }
 
@@ -45,7 +45,7 @@ public class DiscoveryService {
                     "\"days\" (integer, recommended days to stay, e.g. 5), " +
                     "\"imageQuery\" (a string optimized for Google Places API image search, e.g., 'Tokyo Japan city').";
 
-            String jsonResponse = aiProvider.generateContent(prompt);
+            String jsonResponse = modelRouter.generateContent(prompt);
             
             // Clean up possible markdown if the AI ignored instructions
             jsonResponse = jsonResponse.trim();
