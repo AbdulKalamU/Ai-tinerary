@@ -1,6 +1,6 @@
 <div align="center">
   <br />
-  <h1>🌍 AI-Tinerary (Lumina)</h1>
+  <h1>🌍 AI Travel Planner</h1>
   <p><strong>An Intelligent, Full-Stack Travel Orchestration Platform</strong></p>
 
   [![Java](https://img.shields.io/badge/Java-17%2B-orange.svg?style=for-the-badge&logo=java)](https://openjdk.org/)
@@ -46,11 +46,21 @@ To provide high-quality visual context, the application queries the **Google Pla
 > *Please refer to the repository assets for high-quality screenshots of the working application.*
 
 <div align="center">
-  <img src="https://picsum.photos/800/400?text=Upload+Your+Map+Screenshot+Here" alt="Dashboard Map View" width="800" />
-  <p><em>The generated itinerary plotting precise coordinates on the Leaflet Map.</em></p>
+  <img
+    src="https://github.com/user-attachments/assets/5f6ef5c2-b854-40c4-9b0a-930d79a93d40"
+    alt="Landing Page"
+    width="800"
+  />
+  <p><em>The landing page.</em></p>
+
   <br/>
-  <img src="https://picsum.photos/800/400?text=Upload+Your+Timeline+Screenshot+Here" alt="Timeline UI" width="800" />
-  <p><em>The glassmorphism UI displaying daily activities, budgets, and cultural tips.</em></p>
+
+  <img
+    src="https://github.com/user-attachments/assets/5d5c205a-f40f-427f-9058-2f2c716f3aee"
+    alt="Dashboard"
+    width="800"
+  />
+  <p><em>Dashboard.</em></p>
 </div>
 
 ---
