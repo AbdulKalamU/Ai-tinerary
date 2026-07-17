@@ -20,6 +20,9 @@ public class PlacesController {
     @GetMapping("/photo")
     public ResponseEntity<Map<String, String>> getPhoto(@RequestParam String query) {
         String photoUrl = placesService.getPhotoUrl(query);
+        if (photoUrl == null) {
+            return ResponseEntity.notFound().build();
+        }
         Map<String, String> response = new HashMap<>();
         response.put("url", photoUrl);
         return ResponseEntity.ok(response);

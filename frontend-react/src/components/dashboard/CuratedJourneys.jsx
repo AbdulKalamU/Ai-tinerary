@@ -3,105 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Heart, X } from 'lucide-react';
 import ActivityImage from '../ui/ActivityImage';
-
-const JOURNEYS = [
-  {
-    id: 'swiss-alps',
-    title: 'Alpine Escape',
-    location: 'Zermatt, Switzerland',
-    imageQuery: 'Zermatt Switzerland Matterhorn',
-    days: 5,
-    category: 'Nature',
-  },
-  {
-    id: 'kyoto-culture',
-    title: 'Ancient Traditions',
-    location: 'Kyoto, Japan',
-    imageQuery: 'Kyoto Japan temple autumn',
-    days: 7,
-    category: 'Culture',
-  },
-  {
-    id: 'amalfi-coast',
-    title: 'Coastal Romance',
-    location: 'Amalfi, Italy',
-    imageQuery: 'Amalfi Coast Italy ocean',
-    days: 4,
-    category: 'Relaxation',
-  },
-  {
-    id: 'maldives-bliss',
-    title: 'Tropical Paradise',
-    location: 'Maldives',
-    imageQuery: 'Maldives overwater bungalow clear water',
-    days: 6,
-    category: 'Luxury',
-  },
-  {
-    id: 'santorini-sunset',
-    title: 'Aegean Dreams',
-    location: 'Santorini, Greece',
-    imageQuery: 'Santorini Greece sunset caldera',
-    days: 5,
-    category: 'Romance',
-  },
-  {
-    id: 'serengeti-safari',
-    title: 'Wild Encounters',
-    location: 'Serengeti, Tanzania',
-    imageQuery: 'Serengeti safari wildlife sunset',
-    days: 8,
-    category: 'Adventure',
-  },
-  {
-    id: 'banff-lakes',
-    title: 'Glacial Wonders',
-    location: 'Banff, Canada',
-    imageQuery: 'Banff National Park Moraine Lake',
-    days: 6,
-    category: 'Nature',
-  },
-  {
-    id: 'queenstown-thrills',
-    title: 'Adrenaline Rush',
-    location: 'Queenstown, New Zealand',
-    imageQuery: 'Queenstown New Zealand mountains lake',
-    days: 7,
-    category: 'Adventure',
-  },
-  {
-    id: 'machu-picchu',
-    title: 'Inca Trail',
-    location: 'Machu Picchu, Peru',
-    imageQuery: 'Machu Picchu Peru ancient ruins',
-    days: 9,
-    category: 'History',
-  },
-  {
-    id: 'petra-jordan',
-    title: 'Desert Marvels',
-    location: 'Petra, Jordan',
-    imageQuery: 'Petra Jordan Treasury',
-    days: 5,
-    category: 'Culture',
-  },
-  {
-    id: 'iceland-aurora',
-    title: 'Northern Lights',
-    location: 'Reykjavik, Iceland',
-    imageQuery: 'Iceland aurora borealis winter',
-    days: 6,
-    category: 'Nature',
-  },
-  {
-    id: 'bora-bora',
-    title: 'Pacific Pearl',
-    location: 'Bora Bora, French Polynesia',
-    imageQuery: 'Bora Bora aerial view lagoon',
-    days: 7,
-    category: 'Relaxation',
-  }
-];
+import toast from 'react-hot-toast';
 
 // Helper Component for rendering individual journey cards
 const JourneyCard = ({ journey, onClick }) => (
@@ -111,8 +13,8 @@ const JourneyCard = ({ journey, onClick }) => (
     onClick={() => onClick(journey.location)}
   >
     <ActivityImage
-      name={journey.imageQuery}
-      category={journey.category}
+      name={journey.imageQuery || journey.name}
+      category={journey.category || 'city'}
       uniqueId={journey.id}
       className="absolute inset-0 w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out"
     />
@@ -131,13 +33,13 @@ const JourneyCard = ({ journey, onClick }) => (
     <div className="absolute bottom-0 left-0 w-full p-8 flex flex-col justify-end translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
       <div className="flex gap-2 mb-4">
         <span className="px-3 py-1.5 rounded-lg bg-white/10 backdrop-blur-md border border-white/10 text-[10px] uppercase tracking-widest text-white/90 font-medium">
-          {journey.category}
+          {journey.category || 'Travel'}
         </span>
         <span className="px-3 py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 text-[10px] uppercase tracking-widest text-[#A3A3A3]">
-          {journey.days} Days
+          {journey.days || 5} Days
         </span>
       </div>
-      <motion.h3 layoutId={`title-${journey.id}`} className="text-2xl font-semibold text-white tracking-tight mb-1">{journey.title}</motion.h3>
+      <motion.h3 layoutId={`title-${journey.id}`} className="text-2xl font-semibold text-white tracking-tight mb-1">{journey.name}</motion.h3>
       <motion.p layoutId={`location-${journey.id}`} className="text-[#A3A3A3] text-sm font-light tracking-tight">
         {journey.location}
       </motion.p>
@@ -160,6 +62,58 @@ const JourneyCard = ({ journey, onClick }) => (
 export default function CuratedJourneys() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [journeys, setJourneys] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTrendingDestinations();
+  }, []);
+
+  const fetchTrendingDestinations = async () => {
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const res = await fetch(`${backendUrl}/api/v1/discovery/trending`);
+      
+      if (res.ok) {
+        const data = await res.json();
+        setJourneys(data);
+      } else {
+        setJourneys(getFallbackDestinations());
+      }
+    } catch (err) {
+      console.error(err);
+      setJourneys(getFallbackDestinations());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getFallbackDestinations = () => [
+    {
+      id: 'swiss-alps',
+      name: 'Alpine Escape',
+      location: 'Zermatt, Switzerland',
+      imageQuery: 'Zermatt Switzerland',
+      days: 5,
+      category: 'Nature',
+    },
+    {
+      id: 'kyoto-culture',
+      name: 'Ancient Traditions',
+      location: 'Kyoto, Japan',
+      imageQuery: 'Kyoto Japan',
+      days: 7,
+      category: 'Culture',
+    },
+    {
+      id: 'amalfi-coast',
+      name: 'Coastal Romance',
+      location: 'Amalfi, Italy',
+      imageQuery: 'Amalfi Coast Italy',
+      days: 4,
+      category: 'Relaxation',
+    }
+  ];
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -182,8 +136,13 @@ export default function CuratedJourneys() {
     <div className="w-full py-16">
       <div className="flex justify-between items-end mb-12">
         <div>
-          <h2 className="text-3xl font-semibold tracking-tighter text-white mb-2">Curated Journeys.</h2>
-          <p className="text-[#A3A3A3] font-light tracking-tight">Handcrafted itineraries by our travel editors.</p>
+          <h2 className="text-3xl font-semibold tracking-tighter text-white mb-2 flex items-center gap-2">
+            Trending Destinations 
+            <div className="px-2 py-1 bg-primary-500/20 rounded-md border border-primary-500/30">
+              <span className="text-xs text-primary-400 font-medium uppercase tracking-widest">AI Curated</span>
+            </div>
+          </h2>
+          <p className="text-[#A3A3A3] font-light tracking-tight">Real-time global travel trends powered by AI.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
@@ -193,18 +152,26 @@ export default function CuratedJourneys() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {JOURNEYS.slice(0, 3).map((journey, idx) => (
-          <motion.div
-            key={journey.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-          >
-             <JourneyCard journey={journey} onClick={handleCustomize} />
-          </motion.div>
-        ))}
-      </div>
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[1,2,3].map(i => (
+             <div key={i} className="h-[420px] bg-white/5 animate-pulse rounded-[2rem]"></div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {journeys.slice(0, 3).map((journey, idx) => (
+            <motion.div
+              key={journey.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+            >
+               <JourneyCard journey={journey} onClick={handleCustomize} />
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Expanded Modal View */}
       <AnimatePresence>
@@ -232,14 +199,14 @@ export default function CuratedJourneys() {
               </button>
 
               <div className="mb-12">
-                <h2 className="text-4xl font-semibold tracking-tighter text-white mb-3">All Curated Journeys.</h2>
+                <h2 className="text-4xl font-semibold tracking-tighter text-white mb-3">Trending Global Destinations.</h2>
                 <p className="text-[#A3A3A3] font-light text-lg tracking-tight max-w-2xl">
-                  Explore our complete collection of handpicked destinations. Every journey is designed to inspire your next great adventure.
+                  Explore real-time trending travel destinations powered by AI. These locations are dynamically chosen based on current global travel trends.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {JOURNEYS.map((journey, idx) => (
+                {journeys.map((journey, idx) => (
                   <motion.div
                     key={journey.id}
                     initial={{ opacity: 0, y: 20 }}

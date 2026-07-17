@@ -48,16 +48,11 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
           } catch (e) {}
         }
         
-        // Keyword extraction for LoremFlickr
-        const words = name.replace(/[^a-zA-Z\s]/g, '').split(' ');
-        const mainKeyword = words.find(w => w.length > 4) || words[0] || category || 'travel';
-        const searchTag = `${mainKeyword.toLowerCase()},travel`;
+        // If Wikipedia fails (or it wasn't a landmark), we just leave imageUrl as null.
+        // This will trigger the beautiful gradient fallback UI below!
         
-        setImageUrl(`https://loremflickr.com/600/400/${searchTag}/all?lock=${uniqueId}`);
-
       } catch (err) {
-        // Ultimate fallback
-        setImageUrl(`https://picsum.photos/seed/${uniqueId}/600/400`);
+        // Leave as null on error
       } finally {
         setLoading(false);
       }
@@ -88,17 +83,17 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
           className="absolute inset-0 w-full h-full object-cover z-10"
           loading="lazy"
           onError={(e) => {
-             e.target.onerror = null;
-             e.target.src = `https://picsum.photos/seed/${uniqueId}/600/400`;
+             // If image fails to load, hide it
+             setImageUrl(null);
           }}
         />
       )}
 
       {/* Fallback if no image URL and not loading */}
       {!loading && !imageUrl && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center z-10">
-          <MapPin className="w-8 h-8 text-[#333] mb-2" />
-          <span className="text-xs text-[#555] font-medium px-4 text-center line-clamp-2">{name}</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center z-10 bg-gradient-to-br from-[#1a1a24] to-[#0a0a0f]">
+          <MapPin className="w-8 h-8 text-primary-500/50 mb-2" />
+          <span className="text-xs text-white/40 font-medium px-4 text-center line-clamp-2 uppercase tracking-widest">{name}</span>
         </div>
       )}
 

@@ -19,7 +19,7 @@ public class PlacesService {
 
     public String getPhotoUrl(String query) {
         if (apiKey == null || apiKey.equals("not_configured") || apiKey.isEmpty()) {
-            return "https://picsum.photos/seed/" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "/600/400"; // Fallback
+            return null; // Fallback
         }
 
         try {
@@ -32,20 +32,26 @@ public class PlacesService {
             ResponseEntity<Map> response = restTemplate.getForEntity(findPlaceUrl, Map.class);
             Map<String, Object> body = response.getBody();
             
-            if (body != null && body.containsKey("candidates")) {
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-                if (!candidates.isEmpty()) {
-                    Map<String, Object> candidate = candidates.get(0);
-                    if (candidate.containsKey("photos")) {
-                        List<Map<String, Object>> photos = (List<Map<String, Object>>) candidate.get("photos");
-                        if (!photos.isEmpty()) {
-                            String photoReference = (String) photos.get(0).get("photo_reference");
-                            
-                            // Step 2: Construct Photo API URL
-                            return String.format(
-                                "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=%s&key=%s",
-                                photoReference, apiKey
-                            );
+            if (body != null) {
+                if (body.containsKey("status") && !body.get("status").equals("OK")) {
+                    System.err.println("[Places API Error] Status: " + body.get("status") + ", Message: " + body.get("error_message"));
+                }
+                
+                if (body.containsKey("candidates")) {
+                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
+                    if (!candidates.isEmpty()) {
+                        Map<String, Object> candidate = candidates.get(0);
+                        if (candidate.containsKey("photos")) {
+                            List<Map<String, Object>> photos = (List<Map<String, Object>>) candidate.get("photos");
+                            if (!photos.isEmpty()) {
+                                String photoReference = (String) photos.get(0).get("photo_reference");
+                                
+                                // Step 2: Construct Photo API URL
+                                return String.format(
+                                    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photo_reference=%s&key=%s",
+                                    photoReference, apiKey
+                                );
+                            }
                         }
                     }
                 }
@@ -54,7 +60,7 @@ public class PlacesService {
             e.printStackTrace();
         }
         
-        // Final fallback if place or photo not found
-        return "https://picsum.photos/seed/" + URLEncoder.encode(query, StandardCharsets.UTF_8) + "/600/400";
+        // Return null if place or photo not found so frontend can trigger a smart fallback
+        return null;
     }
 }

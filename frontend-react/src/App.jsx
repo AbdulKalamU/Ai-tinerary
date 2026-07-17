@@ -15,6 +15,7 @@ import CreateTrip from './pages/CreateTrip';
 import TripDetail from './pages/TripDetail';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import SwipeDiscovery from './pages/SwipeDiscovery';
 import CustomCursor from './components/ui/CustomCursor';
 import CommandPalette from './components/ui/CommandPalette';
 
@@ -61,6 +62,7 @@ function App() {
             <Route path="/plan/new" element={<PageLayout><CreateTrip /></PageLayout>} />
             <Route path="/plan/:id" element={<PageLayout><TripDetail /></PageLayout>} />
             <Route path="/profile" element={<PageLayout><Profile /></PageLayout>} />
+            <Route path="/discover" element={<SwipeDiscovery />} />
           </Route>
 
           {/* 404 Route */}
