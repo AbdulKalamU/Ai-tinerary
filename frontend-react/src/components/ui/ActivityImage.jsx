@@ -30,29 +30,47 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
         // If Google Places fails (e.g., generic activity), extract keywords for a smart stock photo
         const isLandmark = category === 'sightseeing' || category === 'cultural' || category === 'city' || category === 'Attraction';
         
-        if (isLandmark) {
-          try {
-            const wikiQuery = encodeURIComponent(`${name}`);
-            const wikiRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${wikiQuery}&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`);
-            const wikiData = await wikiRes.json();
+        
+        try {
+          const res = await fetch(`${backendUrl}/api/v1/places/photo?query=${query}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.url) {
+              setImageUrl(data.url);
+              setLoading(false);
+              return;
+            }
+          }
+        } catch (networkErr) {
+          console.warn('Backend fetch failed, falling back directly to Pexels', networkErr);
+        }
+        
+        // --- SMART FALLBACK (Pexels) ---
+        // If Google Places returned 404 or the backend fetch threw a network error
+        try {
+          const pexelsKey = import.meta.env.VITE_PEXELS_API_KEY;
+          if (pexelsKey) {
+            const pexelsQuery = encodeURIComponent(category === 'city' ? name : `${name} travel`);
+            const pexelsRes = await fetch(`https://api.pexels.com/v1/search?query=${pexelsQuery}&per_page=1`, {
+              headers: { Authorization: pexelsKey }
+            });
             
-            if (wikiData && wikiData.query && wikiData.query.pages) {
-              const pages = wikiData.query.pages;
-              const pageId = Object.keys(pages)[0];
-              if (pages[pageId].thumbnail && pages[pageId].thumbnail.source) {
-                setImageUrl(pages[pageId].thumbnail.source);
+            if (pexelsRes.ok) {
+              const pexelsData = await pexelsRes.json();
+              if (pexelsData.photos && pexelsData.photos.length > 0) {
+                setImageUrl(pexelsData.photos[0].src.large2x || pexelsData.photos[0].src.large);
                 setLoading(false);
                 return;
               }
             }
-          } catch (e) {}
+          }
+        } catch (e) {
+          console.warn('Pexels fallback failed', e);
         }
         
-        // If Wikipedia fails (or it wasn't a landmark), we just leave imageUrl as null.
-        // This will trigger the beautiful gradient fallback UI below!
-        
+        // If everything fails, leave imageUrl as null for the gradient fallback
       } catch (err) {
-        // Leave as null on error
+        // Leave as null on unexpected error
       } finally {
         setLoading(false);
       }
