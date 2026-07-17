@@ -11,25 +11,7 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
     const fetchImage = async () => {
       try {
         const query = encodeURIComponent(`${name} ${destination || ''}`.trim());
-        
-        // Fetch from our secure backend endpoint. 
-        // The API key is safely stored on the backend, not exposed to the browser!
         const backendUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        const res = await fetch(`${backendUrl}/api/v1/places/photo?query=${query}`);
-        
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.url) {
-            setImageUrl(data.url);
-            setLoading(false);
-            return;
-          }
-        }
-        
-        // --- SMART FALLBACK ---
-        // If Google Places fails (e.g., generic activity), extract keywords for a smart stock photo
-        const isLandmark = category === 'sightseeing' || category === 'cultural' || category === 'city' || category === 'Attraction';
-        
         
         try {
           const res = await fetch(`${backendUrl}/api/v1/places/photo?query=${query}`);
@@ -42,7 +24,7 @@ export default function ActivityImage({ name, destination, category, uniqueId, c
             }
           }
         } catch (networkErr) {
-          console.warn('Backend fetch failed, falling back directly to Pexels', networkErr);
+          console.warn('Backend fetch failed, falling back to Pexels', networkErr);
         }
         
         // --- SMART FALLBACK (Pexels) ---
